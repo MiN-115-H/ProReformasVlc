@@ -1,0 +1,6 @@
+[17:42, 30/3/2026] minhuamg: crear una tabla de datos que gestionen los presupuestos
+[17:44, 30/3/2026] minhuamg: para la próxima sesión, tener todo el frontend hecho
+[17:47, 30/3/2026] minhuamg: que hacer con las fotos,  como subir y que como hacer que sea autogestionable
+[17:47, 30/3/2026] minhuamg: para el admin
+[17:53, 30/3/2026] minhuamg: que hacer con los clientes
+[17:54, 30/3/2026] minhuamg: hacer dos tablas para los clientes
