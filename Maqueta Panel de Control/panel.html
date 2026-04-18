@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Admin Reformas PRO</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial;background:#f1f5f9;display:flex}
+aside{width:260px;background:#1b4332;color:white;height:100vh;padding:20px}
+aside h2{margin-bottom:20px}
+aside button{width:100%;padding:12px;margin:6px 0;border:none;background:#2d6a4f;color:white;border-radius:8px;cursor:pointer;text-align:left}
+aside button:hover{background:#40916c}
+main{flex:1;padding:25px}
+.card{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05)}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+button{cursor:pointer}
+.btn{padding:6px 10px;border:none;border-radius:6px}
+.btn-add{background:#1b4332;color:white;margin-top:10px}
+.btn-del{background:#e63946;color:white}
+input,select,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:6px}
+.hidden{display:none}
+.label{font-size:12px;color:#555;margin-top:8px}
+</style>
+</head>
+<body>
+
+<aside>
+<h2>🏗️ Admin</h2>
+<button onclick="show('confPresupuesto')">Tipos Presupuesto</button>
+<button onclick="show('unidades')">Unidades</button>
+<button onclick="show('conceptos')">Conceptos</button>
+<button onclick="show('presupuestos')">Presupuestos</button>
+<button onclick="show('servicios')">Servicios</button>
+<button onclick="show('albumes')">Álbumes</button>
+<button onclick="show('usuarios')">Usuarios</button>
+</aside>
+
+<main>
+
+<div id="confPresupuesto" class="card">
+<h3>Tipos de Presupuesto</h3>
+<input id="tipoNombre" placeholder="Nombre del tipo">
+<div class="label">Nombre del tipo de reforma (ej: baño, cocina)</div>
+<textarea id="tipoDesc" placeholder="Descripción"></textarea>
+<div class="label">Descripción opcional</div>
+<button class="btn btn-add" onclick="addTipo()">Añadir</button>
+
+<table>
+<thead><tr><th>Nombre</th><th>Descripción</th><th></th></tr></thead>
+<tbody id="tablaTipos"></tbody>
+</table>
+</div>
+
+<div id="unidades" class="card hidden">
+<h3>Unidades</h3>
+<input id="unidadNombre" placeholder="Nombre">
+<div class="label">Nombre completo (ej: metro cuadrado)</div>
+<input id="unidadAbrev" placeholder="Abreviatura">
+<div class="label">Abreviatura (ej: m²)</div>
+<button class="btn btn-add" onclick="addUnidad()">Añadir</button>
+
+<table>
+<thead><tr><th>Nombre</th><th>Abrev</th><th></th></tr></thead>
+<tbody id="tablaUnidades"></tbody>
+</table>
+</div>
+
+<div id="conceptos" class="card hidden">
+<h3>Conceptos</h3>
+<input id="cDesc" placeholder="Descripción">
+<div class="label">Trabajo o partida (ej: pintura)</div>
+<input id="cPrecio" type="number" placeholder="Precio">
+<div class="label">Precio base</div>
+<select id="cUnidad"></select>
+<div class="label">Unidad de medida</div>
+<select id="cTipo"></select>
+<div class="label">Tipo de reforma</div>
+<button class="btn btn-add" onclick="addConcepto()">Añadir</button>
+
+<table>
+<thead><tr><th>Descripción</th><th>Precio</th><th>Unidad</th><th>Tipo</th><th></th></tr></thead>
+<tbody id="tablaConceptos"></tbody>
+</table>
+</div>
+
+<div id="presupuestos" class="card hidden">
+<h3>Presupuestos</h3>
+<input id="pCliente" placeholder="Cliente">
+<div class="label">Nombre del cliente</div>
+<input id="pCiudad" placeholder="Ciudad">
+<div class="label">Ubicación del trabajo</div>
+<select id="pTipo"></select>
+<div class="label">Tipo de presupuesto</div>
+<button class="btn btn-add" onclick="addPresupuesto()">Añadir</button>
+
+<table>
+<thead><tr><th>Cliente</th><th>Ciudad</th><th>Tipo</th></tr></thead>
+<tbody id="tablaPresupuestos"></tbody>
+</table>
+</div>
+
+<div id="servicios" class="card hidden">
+<h3>Servicios</h3>
+<input id="sNombre" placeholder="Nombre">
+<div class="label">Nombre del servicio</div>
+<textarea id="sDesc" placeholder="Descripción"></textarea>
+<div class="label">Descripción web</div>
+<button class="btn btn-add" onclick="addServicio()">Añadir</button>
+
+<table>
+<thead><tr><th>Nombre</th><th>Descripción</th></tr></thead>
+<tbody id="tablaServicios"></tbody>
+</table>
+</div>
+
+<div id="albumes" class="card hidden">
+<h3>Álbumes</h3>
+<input id="aNombre" placeholder="Nombre">
+<div class="label">Nombre del álbum</div>
+<button class="btn btn-add" onclick="addAlbum()">Añadir</button>
+
+<table>
+<thead><tr><th>Nombre</th></tr></thead>
+<tbody id="tablaAlbum"></tbody>
+</table>
+</div>
+
+<div id="usuarios" class="card hidden">
+<h3>Usuarios</h3>
+<input id="uNombre" placeholder="Nombre">
+<div class="label">Nombre del usuario</div>
+<input id="uEmail" placeholder="Email">
+<div class="label">Correo electrónico</div>
+<button class="btn btn-add" onclick="addUsuario()">Añadir</button>
+
+<table>
+<thead><tr><th>Nombre</th><th>Email</th></tr></thead>
+<tbody id="tablaUsuarios"></tbody>
+</table>
+</div>
+
+</main>
+
+<script>
+let tipos=[],unidades=[],conceptos=[],presupuestos=[],servicios=[],albumes=[],usuarios=[]
+
+function show(id){document.querySelectorAll('.card').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+
+function render(){
+tablaTipos.innerHTML=tipos.map(x=>`<tr><td>${x.nombre}</td><td>${x.desc||''}</td><td><button class='btn btn-del' onclick='del(tipos,${x.id})'>X</button></td></tr>`).join('')
+
+tablaUnidades.innerHTML=unidades.map(x=>`<tr><td>${x.nombre}</td><td>${x.abrev}</td><td><button class='btn btn-del' onclick='del(unidades,${x.id})'>X</button></td></tr>`).join('')
+
+cUnidad.innerHTML=unidades.map(x=>`<option value='${x.id}'>${x.nombre}</option>`)
+cTipo.innerHTML=tipos.map(x=>`<option value='${x.id}'>${x.nombre}</option>`)
+pTipo.innerHTML=tipos.map(x=>`<option value='${x.id}'>${x.nombre}</option>`)
+
+tablaConceptos.innerHTML=conceptos.map(x=>{
+let u=unidades.find(v=>v.id==x.unidad)?.abrev||''
+let t=tipos.find(v=>v.id==x.tipo)?.nombre||''
+return `<tr><td>${x.desc}</td><td>${x.precio}</td><td>${u}</td><td>${t}</td><td><button class='btn btn-del' onclick='del(conceptos,${x.id})'>X</button></td></tr>`
+}).join('')
+
+tablaPresupuestos.innerHTML=presupuestos.map(x=>{
+let t=tipos.find(v=>v.id==x.tipo)?.nombre||''
+return `<tr><td>${x.cliente}</td><td>${x.ciudad}</td><td>${t}</td></tr>`
+}).join('')
+
+tablaServicios.innerHTML=servicios.map(x=>`<tr><td>${x.nombre}</td><td>${x.desc||''}</td></tr>`).join('')
+
+tablaAlbum.innerHTML=albumes.map(x=>`<tr><td>${x.nombre}</td></tr>`).join('')
+
+tablaUsuarios.innerHTML=usuarios.map(x=>`<tr><td>${x.nombre}</td><td>${x.email}</td></tr>`).join('')
+}
+
+function del(arr,id){arr.splice(arr.findIndex(x=>x.id==id),1);render()}
+
+function addTipo(){tipos.push({id:Date.now(),nombre:tipoNombre.value,desc:tipoDesc.value});tipoNombre.value='';tipoDesc.value='';render()}
+function addUnidad(){unidades.push({id:Date.now(),nombre:unidadNombre.value,abrev:unidadAbrev.value});render()}
+function addConcepto(){conceptos.push({id:Date.now(),desc:cDesc.value,precio:cPrecio.value,unidad:cUnidad.value,tipo:cTipo.value});render()}
+function addPresupuesto(){presupuestos.push({id:Date.now(),cliente:pCliente.value,ciudad:pCiudad.value,tipo:pTipo.value});render()}
+function addServicio(){servicios.push({id:Date.now(),nombre:sNombre.value,desc:sDesc.value});render()}
+function addAlbum(){albumes.push({id:Date.now(),nombre:aNombre.value});render()}
+function addUsuario(){usuarios.push({id:Date.now(),nombre:uNombre.value,email:uEmail.value});render()}
+
+render()
+</script>
+
+</body>
+</html>

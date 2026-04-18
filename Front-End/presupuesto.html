@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Common+Sans:wght@400;700&display=swap" />
+</head>
+
+<body>
+  <header>
+    <img src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg" alt="logo" id="logo" />
+    <nav>
+      <ul>
+        <li><a href="#">INICIO</a></li>
+        <li><a href="#">EMPRESA</a></li>
+        <li><a href="#">SERVICIOS</a></li>
+        <li class="submenu">
+          <a href="#">PROYECTOS</a>
+          <ul class="dropdown">
+            <li><a href="#">COCINA</a></li>
+            <li><a href="#">BAÑOS</a></li>
+          </ul>
+        </li>
+        <li><a href="#">CONTACTO</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="calc-hero">
+    <h1 class="calc-title">Calculadora de Presupuestos</h1>
+    <p class="calc-subtitle">Diseña tu espacio ideal y conoce el coste estimado en tiempo real.</p>
+  </section>
+
+  <main class="calc-container">
+    <!-- Panel Izquierdo: Formularios -->
+    <div class="calc-left-panel">
+      
+      <!-- Tarjeta de Datos del Cliente -->
+      <div class="calc-card">
+        <div class="calc-card-header">
+          <h2>1. Datos del Cliente</h2>
+        </div>
+        <form class="calc-form" onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <label for="cliente_nombre">Nombre Completo</label>
+            <input type="text" id="cliente_nombre" placeholder="Ej. Juan Pérez" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cliente_telefono">Teléfono</label>
+              <input type="tel" id="cliente_telefono" placeholder="+34 600..." required>
+            </div>
+            <div class="form-group">
+              <label for="cliente_email">Correo Electrónico</label>
+              <input type="email" id="cliente_email" placeholder="correo@ejemplo.com">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="direccion">Dirección del Proyecto</label>
+              <input type="text" id="direccion" placeholder="Calle, número, piso...">
+            </div>
+            <div class="form-group">
+              <label for="ciudad">Ciudad</label>
+              <input type="text" id="ciudad" placeholder="Ej. Valencia">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="observaciones">Observaciones Generales</label>
+            <textarea id="observaciones" rows="2" placeholder="Detalles extra sobre la reforma..."></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tarjeta de Agregar Línea -->
+      <div class="calc-card">
+        <div class="calc-card-header">
+          <h2>2. Añadir Conceptos</h2>
+        </div>
+        <form id="lineaForm" class="calc-form">
+          <div class="form-group">
+            <label for="descripcionConcepto">Descripción del Trabajo / Concepto</label>
+            <select id="descripcionConcepto" required>
+              <option value="" disabled selected>Selecciona un servicio...</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="unidadMedida">Unidad</label>
+              <select id="unidadMedida" disabled required style="background-color: #e2e8f0; cursor: not-allowed; opacity: 0.8; color: #475569;">
+                <option value="m2">m² (Metros cuadrados)</option>
+                <option value="m">m (Metros lineales)</option>
+                <option value="ud">Unidad</option>
+                <option value="hx">Horas</option>
+                <option value="pa">Partida Alzada</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cantidad">Cantidad</label>
+              <input type="number" id="cantidad" step="1" min="1" placeholder="1" required>
+            </div>
+            <div class="form-group">
+              <label for="precioUnitario">Precio Unit. (€)</label>
+              <input type="number" id="precioUnitario" step="0.01" min="0" placeholder="0.00" readonly required style="background-color: #e2e8f0; cursor: not-allowed; opacity: 0.8; color: #475569;">
+            </div>
+          </div>
+          <button type="submit" class="btn-agregar">+ Añadir al Presupuesto</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Panel Derecho: Ticket/Resumen -->
+    <div class="calc-right-panel">
+      <div class="ticket-container">
+        <div class="ticket-header">
+          <h3>Presupuesto Estimado</h3>
+          <span class="ticket-date" id="ticketFecha"></span>
+        </div>
+        <div class="ticket-client-info" id="ticketClientInfo">
+           Rellena tus datos para personalizar...
+        </div>
+        
+        <div class="ticket-lines-header">
+          <span class="col-desc">Concepto</span>
+          <span class="col-qty">Cant.</span>
+          <span class="col-price">Subtotal</span>
+          <span class="col-action"></span>
+        </div>
+        
+        <div class="ticket-lines-body" id="ticketLines">
+          <!-- Las líneas se inyectarán aquí vía JS -->
+          <div class="empty-state">
+            <p>Aún no has añadido conceptos a tu presupuesto.</p>
+          </div>
+        </div>
+
+        <div class="ticket-total-wrapper">
+          <div class="total-row">
+            <span>Subtotal:</span>
+            <span id="resumenSubtotal">0.00 €</span>
+          </div>
+          <div class="total-row total-iva">
+            <span>IVA (21%):</span>
+            <span id="resumenIVA">0.00 €</span>
+          </div>
+          <div class="ticket-divider"></div>
+          <div class="total-row total-gran">
+            <span>TOTAL ESTIMADO:</span>
+            <span id="resumenTotal">0.00 €</span>
+          </div>
+        </div>
+        
+        <button class="btn-generar" id="btnGenerarPDF">
+          Solicitar Presupuesto Oficial
+        </button>
+      </div>
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="footer-contenido">
+      <!-- IZQUIERDA: Logo + eslogan -->
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg" alt="logo" />
+        </div>
+        <p class="footer-eslogan">
+          Expertos en reformas integrales en Valencia. Nuestra pasión es
+          convertir tus espacios en los lugares que siempre soñaste.
+        </p>
+      </div>
+
+      <!-- DERECHA: columnas -->
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Servicios</h4>
+          <ul>
+            <li><a href="#">Reformas</a></li>
+            <li><a href="#">Cocinas</a></li>
+            <li><a href="#">Baños</a></li>
+            <li><a href="#">Interiorismo</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Aviso legal</a></li>
+            <li><a href="#">Política de privacidad</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li>
+              <p>C/ Torrente nº18 Valencia</p>
+              <p>46014 Valencia España</p>
+            </li>
+            <li>
+              <p>+34 606 939 035</p>
+            </li>
+            <li>
+              <p>julian.proreformasvlc@gmail.com</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Separador: ahora sí fuera del flex principal -->
+    <div class="separadorFooter"></div>
+
+    <div class="copyright">
+      <p>© 2024 ProReformasValencia. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="logica.js"></script>
+</body>
+
+</html>

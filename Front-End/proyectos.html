@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Common+Sans:wght@400;700&display=swap"
+    />
+  </head>
+  <body>
+    <header>
+      <img
+        src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg"
+        alt="logo"
+        id="logo"
+      />
+      <nav>
+        <ul>
+          <li><a href="#">INICIO</a></li>
+          <li><a href="#">EMPRESA</a></li>
+          <li><a href="#">SERVICIOS</a></li>
+          <li class="submenu">
+            <a href="#">PROYECTOS</a>
+            <ul class="dropdown">
+              <li><a href="#">COCINA</a></li>
+              <li><a href="#">BAÑOS</a></li>
+            </ul>
+          </li>
+          <li><a href="#">CONTACTO</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="tituloSeccion">
+      <h1 class="textoTitulo">NUESTROS PROYECTOS</h1>
+      <div class="subtituloSeccion">
+        <p class="textoSubtitulo">
+          Explora nuestra selección de reformas integrales, cocinas y baños
+          realizados en Valencia. Calidad y diseño al servicio de tu hogar.
+        </p>
+      </div>
+    </div>
+
+    <section class="proyectosSeccion">
+      <!-- Selector horizontal -->
+      <div class="selectorProyectos">
+        <button class="filter-btn active" data-category="todos">Todos</button>
+        <button class="filter-btn" data-category="cocina">Cocina</button>
+        <button class="filter-btn" data-category="baños">Baños</button>
+        <button class="filter-btn" data-category="integral">Integral</button>
+        <button class="filter-btn" data-category="otros">Otros</button>
+      </div>
+
+      <!-- Contenedor de cards -->
+      <div class="contenedorProyectos">
+        <!-- Ejemplo de card -->
+        <div class="proyecto-card" data-category="cocina">
+          <div class="proyecto-img"></div>
+          <div class="proyecto-info">
+            <h3>Cocina Moderna</h3>
+            <p>
+              Reforma completa de cocina con acabados de alta gama y
+              distribución optimizada.
+            </p>
+          </div>
+        </div>
+
+        <div class="proyecto-card" data-category="baños">
+          <div class="proyecto-img"></div>
+          <div class="proyecto-info">
+            <h3>Baño Minimalista</h3>
+            <p>
+              Renovación de baño con estilo minimalista y materiales resistentes
+              al agua.
+            </p>
+          </div>
+        </div>
+
+        <div class="proyecto-card" data-category="integral">
+          <div class="proyecto-img"></div>
+          <div class="proyecto-info">
+            <h3>Reforma Integral</h3>
+            <p>
+              Transformación completa de vivienda, redistribuyendo espacios y
+              modernizando acabados.
+            </p>
+          </div>
+        </div>
+
+        <div class="proyecto-card" data-category="otros">
+          <div class="proyecto-img"></div>
+          <div class="proyecto-info">
+            <h3>Otros Proyectos</h3>
+            <p>
+              Proyectos variados que incluyen reformas de locales y pequeños
+              espacios comerciales.
+            </p>
+          </div>
+        </div>
+
+        <!-- Más cards se pueden duplicar aquí -->
+      </div>
+
+      <!-- Botón "Cargar más proyectos" -->
+      <div class="cargarMasContainer">
+        <button id="cargarMasBtn">Cargar más proyectos</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-contenido">
+        <!-- IZQUIERDA: Logo + eslogan -->
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <img
+              src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg"
+              alt="logo"
+            />
+          </div>
+          <p class="footer-eslogan">
+            Expertos en reformas integrales en Valencia. Nuestra pasión es
+            convertir tus espacios en los lugares que siempre soñaste.
+          </p>
+        </div>
+
+        <!-- DERECHA: columnas -->
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Servicios</h4>
+            <ul>
+              <li><a href="#">Reformas</a></li>
+              <li><a href="#">Cocinas</a></li>
+              <li><a href="#">Baños</a></li>
+              <li><a href="#">Interiorismo</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="#">Aviso legal</a></li>
+              <li><a href="#">Política de privacidad</a></li>
+              <li><a href="#">Cookies</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4>Contacto</h4>
+            <ul>
+              <li>
+                <p>C/ Torrente nº18 Valencia</p>
+                <p>46014 Valencia España</p>
+              </li>
+              <li><p>+34 606 939 035</p></li>
+              <li><p>julian.proreformasvlc@gmail.com</p></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Separador: ahora sí fuera del flex principal -->
+      <div class="separadorFooter"></div>
+
+      <div class="copyright">
+        <p>© 2024 ProReformasValencia. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <script src="logica.js"></script>
+  </body>
+</html>
