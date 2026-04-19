@@ -1,0 +1,76 @@
+/* index.html */
+.index-hero-gradient {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+.whatsapp-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.service-card:hover .service-overlay {
+    opacity: 1;
+}
+
+/* empresa.html */
+.page-empresa {
+    font-family: 'Inter', sans-serif;
+}
+
+.empresa-hero-gradient {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=2000');
+    background-size: cover;
+    background-position: center;
+}
+
+/* contacta.html */
+.page-contacta {
+    font-family: 'Manrope', sans-serif;
+}
+
+.page-contacta .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+.contacta-hero-gradient {
+    background: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.95)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070');
+    background-size: cover;
+    background-position: center;
+}
+
+/* proyectos.html */
+.page-proyectos .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.project-card:hover .overlay {
+    opacity: 1;
+}
+
+.project-card:hover img {
+    transform: scale(1.05);
+}
+
+.active-filter {
+    border-bottom: 3px solid #75846b;
+    color: #75846b;
+}
+
+/* servicios.html */
+.service-card:hover .service-image {
+    transform: scale(1.05);
+}
+
+.divider-dots {
+    background-image: radial-gradient(circle, #798c72 1.5px, transparent 1.5px);
+    background-size: 8px 8px;
+    height: 4px;
+    width: 120px;
+}
+
+.radial-bg-pattern {
+    background-image: radial-gradient(circle, white 1px, transparent 1px);
+    background-size: 20px 20px;
+}
