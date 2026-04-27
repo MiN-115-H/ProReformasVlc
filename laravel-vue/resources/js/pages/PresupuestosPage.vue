@@ -18,6 +18,9 @@ const conceptoSeleccionadoId = ref('');
 const cantidad = ref(1);
 
 const lineas = ref([]);
+const guardando = ref(false);
+const guardadoId = ref(null);
+const estadoGuardado = ref('');
 
 const conceptosPorCategoria = {
   cocina: [
@@ -91,7 +94,60 @@ const imprimirPresupuesto = () => {
     alert('Debes rellenar y confirmar tus datos personales antes de imprimir el presupuesto.');
     return;
   }
-  window.print();
+
+  guardarPresupuesto(true);
+};
+
+const guardarPresupuesto = async (imprimirDespues = false) => {
+  if (lineas.value.length === 0) {
+    alert('Anade al menos un concepto antes de guardar el presupuesto.');
+    return;
+  }
+
+  guardando.value = true;
+  estadoGuardado.value = '';
+
+  try {
+    const payload = {
+      cliente_nombre: clienteNombre.value,
+      cliente_telefono: clienteTelefono.value,
+      cliente_email: clienteEmail.value,
+      direccion: clienteDireccion.value || null,
+      ciudad: clienteCiudad.value || null,
+      observaciones: observaciones.value || null,
+      fecha_presupuesto: new Date().toISOString().slice(0, 10),
+      lineas: lineas.value,
+      subtotal: Number(subtotal.value.toFixed(2)),
+      iva: Number(iva.value.toFixed(2)),
+      total: Number(total.value.toFixed(2)),
+    };
+
+    const response = await fetch('/api/presupuestos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('No se pudo guardar el presupuesto.');
+    }
+
+    const data = await response.json();
+    guardadoId.value = data.id;
+    estadoGuardado.value = `Presupuesto guardado (ID ${data.id}).`;
+
+    if (imprimirDespues) {
+      window.print();
+    }
+  } catch (error) {
+    estadoGuardado.value = 'Error al guardar el presupuesto.';
+    alert('No se pudo guardar el presupuesto. Revisa los datos e intentalo de nuevo.');
+  } finally {
+    guardando.value = false;
+  }
 };
 
 const formatEUR = (value) => `${value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
@@ -226,7 +282,15 @@ const formatEUR = (value) => `${value.toLocaleString('es-ES', { minimumFractionD
               <p class="text-3xl font-bold">{{ formatEUR(total) }}</p>
             </div>
 
-            <button type="button" class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold uppercase transition-all" @click="imprimirPresupuesto">
+            <p v-if="estadoGuardado" class="text-xs font-semibold text-center mb-3" :class="guardadoId ? 'text-green-600' : 'text-red-600'">
+              {{ estadoGuardado }}
+            </p>
+
+            <button type="button" class="w-full mb-3 bg-secondary hover:bg-secondary/90 text-white py-3 rounded-lg font-bold uppercase transition-all disabled:opacity-60" @click="guardarPresupuesto(false)" :disabled="guardando">
+              {{ guardando ? 'Guardando...' : 'Guardar Presupuesto' }}
+            </button>
+
+            <button type="button" class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold uppercase transition-all disabled:opacity-60" @click="imprimirPresupuesto" :disabled="guardando">
               Imprimir Presupuesto
             </button>
           </div>
