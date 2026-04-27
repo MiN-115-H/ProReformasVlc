@@ -7,6 +7,18 @@
 @source '../**/*.vue';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    --color-primary: #6B7E66;
+    --color-secondary: #2D3436;
+    --color-background-light: #FFFFFF;
+    --color-background-dark: #121212;
+}
+
+body {
+    margin: 0;
+}
+
+.index-hero-gradient {
+    background: linear-gradient(90deg, rgba(18, 24, 31, 0.82) 0%, rgba(18, 24, 31, 0.35) 55%, rgba(18, 24, 31, 0.12) 100%);
 }
