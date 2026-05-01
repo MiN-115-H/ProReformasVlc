@@ -6,6 +6,13 @@
 body {
   font-family: 'Common Sans', sans-serif;
 }
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+}
 /* ================== LOGO ================== */
 #logo {
   width: 20%;
@@ -756,4 +763,4 @@ header nav ul li a:hover {
   background-color: #0f172a;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
-}
+}

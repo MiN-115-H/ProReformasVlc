@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Reformas Valencia | Empresa</title>
+  <meta name="description" content="Conoce Pro Reformas Valencia: nuestra historia, compromiso con la calidad y equipo profesional." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#6B7E66', secondary: '#2D3436' }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-white">
+
+<!-- ══ HEADER ══ -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+  <nav class="max-w-7xl mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
+    <a href="index.html" class="flex items-center">
+      <img src="img/logo.jpg" alt="Pro Reformas Valencia" class="h-12 md:h-14 w-auto object-contain" />
+    </a>
+    <ul class="hidden lg:flex items-center space-x-8 font-semibold text-sm uppercase tracking-wider">
+      <li><a href="index.html" class="hover:text-primary transition-colors">Inicio</a></li>
+      <li><a href="empresa.html" class="active transition-colors">Empresa</a></li>
+      <li><a href="servicios.html" class="hover:text-primary transition-colors">Servicios</a></li>
+      <li><a href="proyectos.html" class="hover:text-primary transition-colors">Proyectos</a></li>
+      <li><a href="presupuestos.html" class="hover:text-primary transition-colors">Presupuestos</a></li>
+      <li><a href="contacto.html" class="hover:text-primary transition-colors">Contacto</a></li>
+    </ul>
+    <button id="menu-btn" class="lg:hidden p-2 rounded-md text-gray-700 hover:text-primary" aria-label="Abrir menú">
+      <span class="material-icons">menu</span>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="lg:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-3 font-semibold text-sm uppercase tracking-wider">
+    <a href="index.html" class="block hover:text-primary">Inicio</a>
+    <a href="empresa.html" class="block text-primary">Empresa</a>
+    <a href="servicios.html" class="block hover:text-primary">Servicios</a>
+    <a href="proyectos.html" class="block hover:text-primary">Proyectos</a>
+    <a href="presupuestos.html" class="block hover:text-primary">Presupuestos</a>
+    <a href="contacto.html" class="block hover:text-primary">Contacto</a>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section
+  class="min-h-[52vh] py-16 md:py-20 flex items-center bg-cover bg-center bg-no-repeat"
+  style="background-image: linear-gradient(to right, rgba(17,24,39,0.78), rgba(17,24,39,0.45)), url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1800&q=80')"
+>
+  <div class="container mx-auto px-4">
+    <div class="max-w-2xl bg-black/45 backdrop-blur-sm p-8 md:p-10 border-l-4 border-primary shadow-2xl">
+      <h1 class="text-4xl md:text-5xl font-black text-white mb-5 uppercase tracking-tight">Nuestra Empresa</h1>
+      <p class="text-white text-base md:text-lg leading-relaxed max-w-xl">
+        En Pro Reformas Valencia, transformamos espacios y cumplimos sueños. Somos referentes en reformas integrales en toda la Comunidad Valenciana.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HISTORIA ══ -->
+<section class="py-20 bg-gray-50" id="historia">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col lg:flex-row gap-12 items-center">
+      <div class="lg:w-1/2">
+        <h2 class="text-3xl font-black uppercase tracking-widest text-zinc-800 mb-2">Nuestra Historia</h2>
+        <div class="w-24 h-1 bg-primary mb-8"></div>
+        <div class="space-y-6 text-zinc-600 leading-relaxed">
+          <p>Nacimos de una pasión compartida por la arquitectura y el diseño de interiores.</p>
+          <p>Nuestra trayectoria se basa en la transparencia y la honestidad en cada reforma.</p>
+          <p>Trabajamos con proveedores de confianza para garantizar calidad y plazos de entrega.</p>
+        </div>
+      </div>
+      <div class="lg:w-1/2 grid grid-cols-2 gap-4">
+        <img alt="Proceso de trabajo" class="rounded shadow-lg w-full h-64 object-cover"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv5NN23xrl_aH87ikna2WU1nEHZ4zLuiopn9SVEzpwDx9utClhirz-EGICiDYXd_-h3uXW7WjKbiRoWVi7zpTxOEe5h8kqsxl7rMwGvG944k7TOwJ7QLwrML46IYpLPMKGHJ1fCfWJj3zGnBVEMawfBn8HAe7XLVXUE5jtyLqP2lpzFtaS46PliJDa8HXVOX91gqbTplQAYxKIp8YXZ6L5OY-gs1PRG6AO_vESC5u1R3EJLf3uCSGcbZ6VBO4htQfq1OdzRndbOUpr" />
+        <img alt="Oficina" class="rounded shadow-lg w-full h-64 object-cover mt-8"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSbOmiZ6hT44K0p5I1kfDLA1m35r7WKpK0riHRAkYigJhBSytPQ43C91OBGzxUu8Rlre9uQnU5aRUh_JXqwSl0iNHJxWIVBuUy0UNAGklSkrQMGyCHdxujJwZl9GN8KEdv8MFrCSHv3cSMxR5heFpY_wl4Wq-drdTsWcbsutsqrrihvpbM0xZLOKlZbBXs8WZIMazes7BmRcwdyR3UsOBVGsJQQtw_Hmwz2Vz6FJtgLoSFJRmfZTzN2Q0HWMs0NNd_zIRT6GhvDkLR" />
+        <img alt="Detalle constructivo" class="rounded shadow-lg w-full h-64 object-cover -mt-8"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm-ScdbKumsj7LJakC4VITJV6nLx3DtHn-6fvJe-u_CwFiwOpxqKkBnVVKW86R6pLKf0hCTGWh8QQlQ87xm_FxWJTxYcHQ7atHCHjnuUrtNzjIaiA8qhpgeA29pln9IOCoabXvJ0sGTXJq1lTAeC6BydlSpCDPO4XJYmNpv9yJcSDjsRKyZqXn6QC9i-P1wiY3GRIMWZG00IKAodw6XUNWDmT7ciAE80in91dFwA5ttedFiU5S0ugou02tYIVgh0ZznIBdqsVxMYjt" />
+        <img alt="Vivienda terminada" class="rounded shadow-lg w-full h-64 object-cover"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi5-Q8obtCQ_BUceWKSU4MPXm4Zj54-Y3eSdQVIwUWd6JVR34SlbSpy3ZDWqA8zbApHYOerQtH5mj1w_9mXjVTvvDtlHctWbZrNF-eWh_2iWZ3EU1F9YbyxIk6yEgwJ-NXPv_leSSvXbj9wcft3a-9zUv-iyUyMKLUklX-Q2ZZnfl1Fp9BY2oQgpzpPJBlgmpXbkLAsSaolBcanlNfPxqmBTvxkcaPEzncHSuFTn7esEZzJChBC0D5ShVQajX0t9W3puP6aP2HX6ii" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COMPROMISO ══ -->
+<section class="py-20 bg-zinc-50">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl font-black uppercase tracking-widest text-zinc-800">Nuestro Compromiso</h2>
+      <div class="w-24 h-1 bg-primary mx-auto mt-4"></div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100 text-center">
+        <div class="w-16 h-16 bg-zinc-50 border-2 border-primary flex items-center justify-center mx-auto mb-6">
+          <i class="material-icons text-primary text-3xl">check</i>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-4 text-zinc-800">Calidad</h3>
+        <p class="text-zinc-600 text-sm leading-relaxed">Ofrecemos calidad, profesionalidad y seriedad para ganar la confianza de cada cliente.</p>
+      </div>
+      <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100 text-center">
+        <div class="w-16 h-16 bg-zinc-50 border-2 border-primary flex items-center justify-center mx-auto mb-6">
+          <i class="material-icons text-primary text-3xl">construction</i>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-4 text-zinc-800">Servicio</h3>
+        <p class="text-zinc-600 text-sm leading-relaxed">Servicios personalizados y adaptados a las necesidades concretas de cada proyecto.</p>
+      </div>
+      <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100 text-center">
+        <div class="w-16 h-16 bg-zinc-50 border-2 border-primary flex items-center justify-center mx-auto mb-6">
+          <i class="material-icons text-primary text-3xl">euro</i>
+        </div>
+        <h3 class="text-xl font-bold uppercase mb-4 text-zinc-800">Precio</h3>
+        <p class="text-zinc-600 text-sm leading-relaxed">Materiales de calidad a precios asequibles y presupuestos ajustados.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="bg-black text-gray-400 py-16 px-6 md:px-12">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+    <div class="space-y-6">
+      <a href="index.html"><img src="img/logo.jpg" alt="Pro Reformas Valencia" class="h-14 w-auto object-contain rounded-sm bg-white p-1" /></a>
+      <p class="text-xs leading-relaxed">En <span class="font-bold text-white">Pro Reformas Valencia</span>, queremos que sus sueños se hagan realidad.</p>
+    </div>
+    <div>
+      <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">Proyectos</h4>
+      <ul class="space-y-3 text-xs uppercase tracking-wider">
+        <li><a href="proyectos.html" class="hover:text-primary transition-colors">Cocinas</a></li>
+        <li><a href="proyectos.html" class="hover:text-primary transition-colors">Baños</a></li>
+        <li><a href="proyectos.html" class="hover:text-primary transition-colors">Reforma Integral</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">RGPD</h4>
+      <ul class="space-y-3 text-xs uppercase tracking-wider">
+        <li><a href="#" class="hover:text-primary transition-colors">Política de Cookies</a></li>
+        <li><a href="#" class="hover:text-primary transition-colors">Política de Privacidad</a></li>
+        <li><a href="#" class="hover:text-primary transition-colors">Aviso Legal</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">Contacto</h4>
+      <ul class="space-y-4 text-xs">
+        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-lg">location_on</span><span>C/ Torrente nº18<br />46014 Valencia, España</span></li>
+        <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">call</span><span>+34 606 939 035</span></li>
+        <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">mail</span><span>julian.proreformasvlc@gmail.com</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mt-16 pt-8 border-t border-gray-800 text-center text-[10px] uppercase tracking-[0.2em]">
+    <p>© ProReformas Valencia 2024 | Todos los derechos reservados</p>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('menu-btn').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  });
+</script>
+</body>
+</html>

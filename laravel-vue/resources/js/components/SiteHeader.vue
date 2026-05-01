@@ -1,7 +1,10 @@
 <script setup>
+import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
 const route = useRoute();
+const isAdminAuthenticated = ref(false);
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
 const links = [
   { to: '/', label: 'Inicio' },
@@ -11,6 +14,37 @@ const links = [
   { to: '/presupuestos', label: 'Presupuestos' },
   { to: '/contacto', label: 'Contacto' },
 ];
+
+const refreshSessionState = async () => {
+  try {
+    const response = await fetch('/auth/me', { headers: { Accept: 'application/json' } });
+    if (!response.ok) {
+      isAdminAuthenticated.value = false;
+      return;
+    }
+
+    const payload = await response.json();
+    isAdminAuthenticated.value = payload?.user?.rol === 'admin' && payload?.user?.activo === true;
+  } catch {
+    isAdminAuthenticated.value = false;
+  }
+};
+
+const logout = async () => {
+  try {
+    await fetch('/auth/logout', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+    });
+  } finally {
+    window.location.href = '/login';
+  }
+};
+
+onMounted(refreshSessionState);
 </script>
 
 <template>
@@ -30,6 +64,26 @@ const links = [
             {{ link.label }}
           </RouterLink>
         </li>
+        <template v-if="isAdminAuthenticated">
+          <li>
+            <RouterLink
+              to="/admin/panel"
+              class="transition-colors"
+              :class="route.path.startsWith('/admin') ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary'"
+            >
+              Panel
+            </RouterLink>
+          </li>
+          <li>
+            <button
+              type="button"
+              class="transition-colors hover:text-primary cursor-pointer"
+              @click="logout"
+            >
+              Salir
+            </button>
+          </li>
+        </template>
       </ul>
     </nav>
   </header>

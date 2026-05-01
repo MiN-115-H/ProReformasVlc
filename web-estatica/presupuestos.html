@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Reformas Valencia | Presupuestos</title>
+  <meta name="description" content="Calcula un presupuesto estimado para tu reforma en Valencia e imprímelo como albarán." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#6B7E66', secondary: '#2D3436' }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-white">
+
+<!-- ══ HEADER (no-print) ══ -->
+<header class="no-print sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+  <nav class="max-w-7xl mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
+    <a href="index.html" class="flex items-center">
+      <img src="img/logo.jpg" alt="Pro Reformas Valencia" class="h-12 md:h-14 w-auto object-contain" />
+    </a>
+    <ul class="hidden lg:flex items-center space-x-8 font-semibold text-sm uppercase tracking-wider">
+      <li><a href="index.html" class="hover:text-primary transition-colors">Inicio</a></li>
+      <li><a href="empresa.html" class="hover:text-primary transition-colors">Empresa</a></li>
+      <li><a href="servicios.html" class="hover:text-primary transition-colors">Servicios</a></li>
+      <li><a href="proyectos.html" class="hover:text-primary transition-colors">Proyectos</a></li>
+      <li><a href="presupuestos.html" class="active transition-colors">Presupuestos</a></li>
+      <li><a href="contacto.html" class="hover:text-primary transition-colors">Contacto</a></li>
+    </ul>
+    <button id="menu-btn" class="lg:hidden p-2 rounded-md text-gray-700 hover:text-primary" aria-label="Abrir menú">
+      <span class="material-icons">menu</span>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="lg:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-3 font-semibold text-sm uppercase tracking-wider">
+    <a href="index.html" class="block hover:text-primary">Inicio</a>
+    <a href="empresa.html" class="block hover:text-primary">Empresa</a>
+    <a href="servicios.html" class="block hover:text-primary">Servicios</a>
+    <a href="proyectos.html" class="block hover:text-primary">Proyectos</a>
+    <a href="presupuestos.html" class="block text-primary">Presupuestos</a>
+    <a href="contacto.html" class="block hover:text-primary">Contacto</a>
+  </div>
+</header>
+
+<!-- ══ CONTENIDO PRINCIPAL (no-print) ══ -->
+<div class="no-print">
+
+  <!-- Hero -->
+  <section
+    class="min-h-[52vh] py-16 md:py-20 flex items-center bg-cover bg-center bg-no-repeat"
+    style="background-image: linear-gradient(to right, rgba(17,24,39,0.78), rgba(17,24,39,0.45)), url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=80')"
+  >
+    <div class="container mx-auto px-4">
+      <div class="max-w-2xl bg-black/45 backdrop-blur-sm p-8 md:p-10 border-l-4 border-primary shadow-2xl">
+        <h1 class="text-4xl md:text-5xl font-black text-white mb-5 uppercase tracking-tight">Presupuestos</h1>
+        <p class="text-white text-base md:text-lg leading-relaxed max-w-xl">
+          Calcula un presupuesto estimado y solicita una propuesta detallada a medida.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-6 py-24">
+
+    <!-- Disclaimer -->
+    <div class="disclaimer-box mb-8">
+      <p class="disclaimer-title">Información orientativa</p>
+      <p class="disclaimer-text">
+        Este documento tiene carácter meramente informativo y se basa en precios medios de mercado para materiales
+        y mano de obra. El importe final puede variar según mediciones definitivas, calidades elegidas y
+        condiciones reales de ejecución en obra.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- Formulario cliente + conceptos -->
+      <div class="lg:col-span-2 space-y-8">
+
+        <!-- 1. Datos del Cliente -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 text-primary">1. Datos del Cliente</h2>
+          <form id="form-cliente" class="space-y-4" onsubmit="return false">
+            <div>
+              <label class="block text-sm font-semibold mb-2" for="cliente_nombre">Nombre Completo</label>
+              <input id="cliente_nombre" type="text" placeholder="Ej. Juan Pérez" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary" />
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold mb-2" for="cliente_telefono">Teléfono</label>
+                <input id="cliente_telefono" type="tel" placeholder="+34 600..." required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-2" for="cliente_email">Correo Electrónico</label>
+                <input id="cliente_email" type="email" placeholder="correo@ejemplo.com" required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold mb-2" for="direccion">Dirección del Proyecto</label>
+                <input id="direccion" type="text" placeholder="Calle, número, piso..."
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-2" for="ciudad">Ciudad</label>
+                <input id="ciudad" type="text" placeholder="Ej. Valencia"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2" for="observaciones">Observaciones Generales</label>
+              <textarea id="observaciones" rows="3" placeholder="Detalles extra sobre la reforma..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"></textarea>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+              <button type="button" id="btn-confirmar"
+                class="bg-primary hover:bg-primary/90 text-white py-2 px-5 rounded-lg font-bold uppercase transition-all">
+                Confirmar Datos Personales
+              </button>
+              <span id="estado-confirmacion" class="text-xs font-semibold text-gray-600">
+                Datos pendientes de confirmar
+              </span>
+            </div>
+          </form>
+        </div>
+
+        <!-- 2. Añadir Conceptos -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 text-primary">2. Añadir Conceptos</h2>
+          <form id="form-concepto" class="space-y-4" onsubmit="anadirConcepto(event)">
+            <div>
+              <label class="block text-sm font-semibold mb-2" for="categoria">Categoría de Reforma</label>
+              <select id="categoria" required onchange="actualizarConceptos()"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary">
+                <option value="" disabled selected>Selecciona una categoría...</option>
+                <option value="cocina">Cocina</option>
+                <option value="bano">Baño</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2" for="concepto">Trabajo Específico</label>
+              <select id="concepto" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary">
+                <option value="" disabled selected>Primero elige una categoría...</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2" for="cantidad">Cantidad</label>
+              <input id="cantidad" type="number" min="1" step="1" value="1" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary" />
+            </div>
+            <button type="submit"
+              class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold uppercase transition-all">
+              + Añadir al Presupuesto
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Panel lateral presupuesto -->
+      <div>
+        <div class="bg-white rounded-lg shadow-lg p-8 sticky top-20">
+          <h3 class="text-2xl font-bold uppercase tracking-widest mb-2 text-primary">Presupuesto Estimado</h3>
+          <span id="ticket-fecha" class="text-xs text-gray-500"></span>
+
+          <div class="space-y-3 my-6">
+            <div class="flex justify-between text-sm font-semibold pb-2 border-b">
+              <span>Concepto</span><span>Subtotal</span>
+            </div>
+          </div>
+
+          <div id="lineas-container" class="space-y-2 mb-6">
+            <div id="placeholder-vacio" class="text-center text-gray-500 py-8">
+              <p>Aún no has añadido conceptos a tu presupuesto.</p>
+            </div>
+          </div>
+
+          <div class="space-y-3 border-t border-b py-4 mb-6">
+            <div class="flex justify-between"><span>Subtotal:</span><span id="subtotal" class="font-semibold">0,00 EUR</span></div>
+            <div class="flex justify-between text-sm text-gray-600"><span>IVA (21%):</span><span id="iva" class="font-semibold">0,00 EUR</span></div>
+          </div>
+
+          <div class="mb-6 p-4 bg-primary text-white rounded-lg text-center">
+            <p class="text-sm font-semibold mb-1">TOTAL ESTIMADO</p>
+            <p id="total" class="text-3xl font-bold">0,00 EUR</p>
+          </div>
+
+          <button type="button" onclick="imprimirPresupuesto()"
+            class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold uppercase transition-all">
+            Descargar/Imprimir presupuesto
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer (no-print) -->
+  <footer class="bg-black text-gray-400 py-16 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div class="space-y-6">
+        <a href="index.html"><img src="img/logo.jpg" alt="Pro Reformas Valencia" class="h-14 w-auto object-contain rounded-sm bg-white p-1" /></a>
+        <p class="text-xs leading-relaxed">En <span class="font-bold text-white">Pro Reformas Valencia</span>, queremos que sus sueños se hagan realidad.</p>
+      </div>
+      <div>
+        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">Proyectos</h4>
+        <ul class="space-y-3 text-xs uppercase tracking-wider">
+          <li><a href="proyectos.html" class="hover:text-primary transition-colors">Cocinas</a></li>
+          <li><a href="proyectos.html" class="hover:text-primary transition-colors">Baños</a></li>
+          <li><a href="proyectos.html" class="hover:text-primary transition-colors">Reforma Integral</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">RGPD</h4>
+        <ul class="space-y-3 text-xs uppercase tracking-wider">
+          <li><a href="#" class="hover:text-primary transition-colors">Política de Cookies</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Política de Privacidad</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Aviso Legal</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">Contacto</h4>
+        <ul class="space-y-4 text-xs">
+          <li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-lg">location_on</span><span>C/ Torrente nº18<br />46014 Valencia, España</span></li>
+          <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">call</span><span>+34 606 939 035</span></li>
+          <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">mail</span><span>julian.proreformasvlc@gmail.com</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-16 pt-8 border-t border-gray-800 text-center text-[10px] uppercase tracking-[0.2em]">
+      <p>© ProReformas Valencia 2024 | Todos los derechos reservados</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ══ SECCIÓN IMPRESIÓN (albarán) ══ -->
+<section class="print-only print-sheet">
+  <header class="print-header">
+    <div class="brand-row">
+      <img class="print-logo" src="img/logo.jpg" alt="Logo ProReformasVLC" />
+      <div>
+        <p class="print-company">ProReformasVLC</p>
+        <p class="print-doc-type">Presupuesto orientativo</p>
+      </div>
+    </div>
+    <div class="print-meta">
+      <p id="print-fecha"></p>
+    </div>
+  </header>
+
+  <section class="print-block">
+    <h4>Datos del cliente</h4>
+    <div class="print-grid">
+      <p><strong>Nombre:</strong> <span id="p-nombre">-</span></p>
+      <p><strong>Teléfono:</strong> <span id="p-tel">-</span></p>
+      <p><strong>Email:</strong> <span id="p-email">-</span></p>
+      <p><strong>Ciudad:</strong> <span id="p-ciudad">-</span></p>
+      <p class="full"><strong>Dirección:</strong> <span id="p-dir">-</span></p>
+      <p class="full"><strong>Observaciones:</strong> <span id="p-obs">-</span></p>
+    </div>
+  </section>
+
+  <section class="print-block">
+    <h4>Conceptos incluidos</h4>
+    <table class="print-table">
+      <thead>
+        <tr><th>Concepto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr>
+      </thead>
+      <tbody id="print-tbody"></tbody>
+    </table>
+  </section>
+
+  <section class="print-total">
+    <p><span>Subtotal:</span><strong id="p-subtotal">0,00 EUR</strong></p>
+    <p><span>IVA (21%):</span><strong id="p-iva">0,00 EUR</strong></p>
+    <p class="grand-total"><span>Total estimado:</span><strong id="p-total">0,00 EUR</strong></p>
+  </section>
+
+  <div class="print-company-footer">
+    <div class="company-footer-brand">
+      <img class="company-footer-logo" src="img/logo.jpg" alt="Logo ProReformasVLC" />
+      <div>
+        <p class="company-footer-name">ProReformasVLC</p>
+        <p class="company-footer-tag">Reformas y rehabilitación de vivienda</p>
+      </div>
+    </div>
+    <div class="company-footer-data">
+      <p><strong>Dirección:</strong> C/ Torrente nº18, 46014 Valencia, España</p>
+      <p><strong>Teléfono:</strong> +34 606 939 035</p>
+      <p><strong>Email:</strong> julian.proreformasvlc@gmail.com</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ── Helpers ──
+  const IVA = 0.21;
+  let lineas = [];
+  let datosConfirmados = false;
+
+  const conceptosPorCategoria = {
+    cocina: [
+      { id: 1, descripcion: 'Poner suelos', precio: 39.5 },
+      { id: 2, descripcion: 'Alicatado', precio: 44.0 },
+    ],
+    bano: [
+      { id: 3, descripcion: 'Cambiar bañera', precio: 890.0 },
+      { id: 4, descripcion: 'Alicatado', precio: 48.0 },
+      { id: 5, descripcion: 'Poner suelos', precio: 41.0 },
+    ],
+  };
+
+  const fmt = v => v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' EUR';
+
+  // Set fecha
+  const hoy = new Date().toLocaleDateString('es-ES');
+  document.getElementById('ticket-fecha').textContent = hoy;
+  document.getElementById('print-fecha').textContent = 'Fecha: ' + hoy;
+
+  function actualizarConceptos() {
+    const cat = document.getElementById('categoria').value;
+    const sel = document.getElementById('concepto');
+    sel.innerHTML = '<option value="" disabled selected>Selecciona un trabajo...</option>';
+    (conceptosPorCategoria[cat] || []).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.descripcion;
+      sel.appendChild(opt);
+    });
+  }
+
+  function recalcular() {
+    const subtotal = lineas.reduce((s, l) => s + l.subtotal, 0);
+    const iva = subtotal * IVA;
+    const total = subtotal + iva;
+    document.getElementById('subtotal').textContent = fmt(subtotal);
+    document.getElementById('iva').textContent = fmt(iva);
+    document.getElementById('total').textContent = fmt(total);
+    renderLineas();
+    // Print values
+    document.getElementById('p-subtotal').textContent = fmt(subtotal);
+    document.getElementById('p-iva').textContent = fmt(iva);
+    document.getElementById('p-total').textContent = fmt(total);
+    renderPrintTabla();
+  }
+
+  function renderLineas() {
+    const cont = document.getElementById('lineas-container');
+    const placeholder = document.getElementById('placeholder-vacio');
+    if (lineas.length === 0) {
+      placeholder.style.display = '';
+      return;
+    }
+    placeholder.style.display = 'none';
+    // Remove old lineas
+    cont.querySelectorAll('.linea-row').forEach(el => el.remove());
+    lineas.forEach(l => {
+      const div = document.createElement('div');
+      div.className = 'linea-row grid gap-2 items-start border-b border-gray-100 pb-2';
+      div.style.gridTemplateColumns = '1fr auto auto auto';
+      div.innerHTML = `
+        <div class="text-sm">
+          <p class="font-semibold text-gray-800">${l.descripcion}</p>
+          <small class="text-gray-500">Cantidad: ${l.cantidad}</small>
+        </div>
+        <div class="text-xs text-gray-500 self-center">x${l.cantidad}</div>
+        <div class="text-sm font-semibold self-center">${fmt(l.subtotal)}</div>
+        <button type="button" class="text-red-500 hover:text-red-700 text-sm" onclick="eliminarLinea(${l.id})">X</button>
+      `;
+      cont.appendChild(div);
+    });
+  }
+
+  function renderPrintTabla() {
+    const tbody = document.getElementById('print-tbody');
+    tbody.innerHTML = '';
+    lineas.forEach(l => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${l.descripcion}</td><td>${l.cantidad}</td><td>${fmt(l.precio)}</td><td>${fmt(l.subtotal)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function anadirConcepto(e) {
+    e.preventDefault();
+    const cat = document.getElementById('categoria').value;
+    const conceptoId = parseInt(document.getElementById('concepto').value);
+    const cantidad = parseInt(document.getElementById('cantidad').value);
+    if (!cat || !conceptoId || cantidad < 1) return;
+    const concepto = (conceptosPorCategoria[cat] || []).find(c => c.id === conceptoId);
+    if (!concepto) return;
+    lineas.push({ id: Date.now(), descripcion: concepto.descripcion, cantidad, precio: concepto.precio, subtotal: cantidad * concepto.precio });
+    // reset form
+    document.getElementById('categoria').value = '';
+    document.getElementById('concepto').innerHTML = '<option value="" disabled selected>Primero elige una categoría...</option>';
+    document.getElementById('cantidad').value = 1;
+    recalcular();
+  }
+
+  function eliminarLinea(id) {
+    lineas = lineas.filter(l => l.id !== id);
+    recalcular();
+  }
+
+  // Confirmar datos
+  document.getElementById('btn-confirmar').addEventListener('click', () => {
+    const nombre = document.getElementById('cliente_nombre').value.trim();
+    const tel = document.getElementById('cliente_telefono').value.trim();
+    const email = document.getElementById('cliente_email').value.trim();
+    if (!nombre || !tel || !email) {
+      alert('Para confirmar, rellena al menos nombre, teléfono y correo electrónico.');
+      return;
+    }
+    datosConfirmados = true;
+    document.getElementById('estado-confirmacion').textContent = 'Datos personales confirmados';
+    document.getElementById('estado-confirmacion').style.color = '#16a34a';
+    // Sync to print
+    document.getElementById('p-nombre').textContent = nombre || '-';
+    document.getElementById('p-tel').textContent = tel || '-';
+    document.getElementById('p-email').textContent = email || '-';
+    document.getElementById('p-ciudad').textContent = document.getElementById('ciudad').value || '-';
+    document.getElementById('p-dir').textContent = document.getElementById('direccion').value || '-';
+    document.getElementById('p-obs').textContent = document.getElementById('observaciones').value || '-';
+  });
+
+  // Reset confirmacion si cambian datos
+  ['cliente_nombre','cliente_telefono','cliente_email','direccion','ciudad'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      datosConfirmados = false;
+      document.getElementById('estado-confirmacion').textContent = 'Datos pendientes de confirmar';
+      document.getElementById('estado-confirmacion').style.color = '';
+    });
+  });
+
+  function imprimirPresupuesto() {
+    if (!datosConfirmados) {
+      alert('Debes rellenar y confirmar tus datos personales antes de imprimir el presupuesto.');
+      return;
+    }
+    if (lineas.length === 0) {
+      alert('Añade al menos un concepto antes de descargar el presupuesto.');
+      return;
+    }
+    window.print();
+  }
+
+  // Mobile menu
+  document.getElementById('menu-btn').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  });
+</script>
+</body>
+</html>

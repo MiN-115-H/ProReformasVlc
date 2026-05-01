@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Reformas Valencia | Proyectos</title>
+  <meta name="description" content="Galería de proyectos de reforma en Valencia: cocinas, baños y reformas integrales." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#6B7E66', secondary: '#2D3436' }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-white">
+
+<!-- ══ HEADER ══ -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+  <nav class="max-w-7xl mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
+    <a href="index.html" class="flex items-center">
+      <img src="img/logo.jpg" alt="Pro Reformas Valencia" class="h-12 md:h-14 w-auto object-contain" />
+    </a>
+    <ul class="hidden lg:flex items-center space-x-8 font-semibold text-sm uppercase tracking-wider">
+      <li><a href="index.html" class="hover:text-primary transition-colors">Inicio</a></li>
+      <li><a href="empresa.html" class="hover:text-primary transition-colors">Empresa</a></li>
+      <li><a href="servicios.html" class="hover:text-primary transition-colors">Servicios</a></li>
+      <li><a href="proyectos.html" class="active transition-colors">Proyectos</a></li>
+      <li><a href="presupuestos.html" class="hover:text-primary transition-colors">Presupuestos</a></li>
+      <li><a href="contacto.html" class="hover:text-primary transition-colors">Contacto</a></li>
+    </ul>
+    <button id="menu-btn" class="lg:hidden p-2 rounded-md text-gray-700 hover:text-primary" aria-label="Abrir menú">
+      <span class="material-icons">menu</span>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="lg:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-3 font-semibold text-sm uppercase tracking-wider">
+    <a href="index.html" class="block hover:text-primary">Inicio</a>
+    <a href="empresa.html" class="block hover:text-primary">Empresa</a>
+    <a href="servicios.html" class="block hover:text-primary">Servicios</a>
+    <a href="proyectos.html" class="block text-primary">Proyectos</a>
+    <a href="presupuestos.html" class="block hover:text-primary">Presupuestos</a>
+    <a href="contacto.html" class="block hover:text-primary">Contacto</a>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section
+  class="min-h-[52vh] py-16 md:py-20 flex items-center bg-cover bg-center bg-no-repeat"
+  style="background-image: linear-gradient(to right, rgba(17,24,39,0.78), rgba(17,24,39,0.45)), url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1800&q=80')"
+>
+  <div class="container mx-auto px-4">
+    <div class="max-w-2xl bg-black/45 backdrop-blur-sm p-8 md:p-10 border-l-4 border-primary shadow-2xl">
+      <h1 class="text-4xl md:text-5xl font-black text-white mb-5 uppercase tracking-tight">Nuestros Proyectos</h1>
+      <p class="text-white text-base md:text-lg leading-relaxed max-w-xl">
+        Explora una selección de proyectos de cocina, baño y reforma integral realizados en Valencia.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FILTROS + GRID ══ -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <!-- Botones de filtro -->
+    <div class="flex justify-center gap-3 mb-12 flex-wrap">
+      <button class="filter-btn px-6 py-2 rounded-lg uppercase text-sm font-bold transition-all bg-primary text-white" data-cat="todos">Todos</button>
+      <button class="filter-btn px-6 py-2 rounded-lg uppercase text-sm font-bold transition-all border-2 border-primary text-primary hover:bg-primary hover:text-white" data-cat="cocina">Cocina</button>
+      <button class="filter-btn px-6 py-2 rounded-lg uppercase text-sm font-bold transition-all border-2 border-primary text-primary hover:bg-primary hover:text-white" data-cat="banos">Baños</button>
+      <button class="filter-btn px-6 py-2 rounded-lg uppercase text-sm font-bold transition-all border-2 border-primary text-primary hover:bg-primary hover:text-white" data-cat="integral">Integral</button>
+    </div>
+
+    <!-- Grid de proyectos -->
+    <div id="proyectos-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      <article data-cat="cocina" class="proyecto group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Cocina abierta con isla" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Cocina abierta con isla</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Reforma completa de cocina en Campanar con isla central, iluminación lineal y mobiliario a medida.</p>
+        </div>
+      </article>
+
+      <article data-cat="banos" class="proyecto group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Baño suite con microcemento" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Baño suite con microcemento</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Renovación integral con ducha de obra, sanitarios suspendidos y revestimientos continuos.</p>
+        </div>
+      </article>
+
+      <article data-cat="integral" class="proyecto group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Reforma integral de ático" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Reforma integral de ático</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Redistribución de estancias y actualización completa de instalaciones para mayor confort.</p>
+        </div>
+      </article>
+
+      <article data-cat="cocina" class="proyecto group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Cocina minimalista en blanco" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Cocina minimalista en blanco</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Cocina lineal con encimera porcelánica y electrodomésticos integrados.</p>
+        </div>
+      </article>
+
+      <article data-cat="banos" class="proyecto group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Baño compacto optimizado" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Baño compacto optimizado</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Mueble suspendido, mampara fija y almacenaje vertical para aprovechar cada centímetro.</p>
+        </div>
+      </article>
+
+      <article data-cat="integral" class="proyecto group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Reforma de salón y comedor" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Reforma de salón y comedor</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Unificación visual con nuevos pavimentos y paleta neutra para mayor amplitud.</p>
+        </div>
+      </article>
+
+      <article data-cat="cocina" class="proyecto hidden group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Cocina rústica renovada" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1556909212-d5b604d0c90d?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Cocina rústica renovada</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Actualización de carpinterías, encimera y zonas de trabajo manteniendo el estilo tradicional.</p>
+        </div>
+      </article>
+
+      <article data-cat="banos" class="proyecto hidden group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Baño contemporáneo en suite" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Baño contemporáneo en suite</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Diseño funcional con plato extraplano, hornacinas y grifería empotrada.</p>
+        </div>
+      </article>
+
+      <article data-cat="integral" class="proyecto hidden group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2">
+        <div class="h-56 overflow-hidden">
+          <img alt="Vivienda completa en Ruzafa" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80" />
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-bold uppercase tracking-wide text-zinc-900 mb-3">Vivienda completa en Ruzafa</h3>
+          <p class="text-sm leading-relaxed text-zinc-700">Rediseño integral de vivienda con mejoras en eficiencia, iluminación y distribución.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- Botón Ver más -->
+<div id="ver-mas-container" class="text-center pb-16">
+  <button id="ver-mas-btn" type="button"
+    class="inline-block border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors px-8 py-3 uppercase tracking-widest text-sm font-bold">
+    Ver más
+  </button>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer class="bg-black text-gray-400 py-16 px-6 md:px-12">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+    <div class="space-y-6">
+      <a href="index.html"><img src="img/logo.jpg" alt="Pro Reformas Valencia" class="h-14 w-auto object-contain rounded-sm bg-white p-1" /></a>
+      <p class="text-xs leading-relaxed">En <span class="font-bold text-white">Pro Reformas Valencia</span>, queremos que sus sueños se hagan realidad.</p>
+    </div>
+    <div>
+      <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">Proyectos</h4>
+      <ul class="space-y-3 text-xs uppercase tracking-wider">
+        <li><a href="proyectos.html" class="hover:text-primary transition-colors">Cocinas</a></li>
+        <li><a href="proyectos.html" class="hover:text-primary transition-colors">Baños</a></li>
+        <li><a href="proyectos.html" class="hover:text-primary transition-colors">Reforma Integral</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">RGPD</h4>
+      <ul class="space-y-3 text-xs uppercase tracking-wider">
+        <li><a href="#" class="hover:text-primary transition-colors">Política de Cookies</a></li>
+        <li><a href="#" class="hover:text-primary transition-colors">Política de Privacidad</a></li>
+        <li><a href="#" class="hover:text-primary transition-colors">Aviso Legal</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">Contacto</h4>
+      <ul class="space-y-4 text-xs">
+        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-lg">location_on</span><span>C/ Torrente nº18<br />46014 Valencia, España</span></li>
+        <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">call</span><span>+34 606 939 035</span></li>
+        <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">mail</span><span>julian.proreformasvlc@gmail.com</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mt-16 pt-8 border-t border-gray-800 text-center text-[10px] uppercase tracking-[0.2em]">
+    <p>© ProReformas Valencia 2024 | Todos los derechos reservados</p>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu
+  document.getElementById('menu-btn').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  });
+
+  // Filter & load more
+  const allProyectos = Array.from(document.querySelectorAll('.proyecto'));
+  let categoriaActiva = 'todos';
+  let limite = 6;
+
+  function getFiltered() {
+    if (categoriaActiva === 'todos') return allProyectos;
+    return allProyectos.filter(p => p.dataset.cat === categoriaActiva);
+  }
+
+  function render() {
+    const filtered = getFiltered();
+    allProyectos.forEach(p => p.classList.add('hidden'));
+    filtered.slice(0, limite).forEach(p => p.classList.remove('hidden'));
+    const btn = document.getElementById('ver-mas-container');
+    btn.style.display = filtered.length > limite ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoriaActiva = btn.dataset.cat;
+      limite = 6;
+      // Update button styles
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('bg-primary', 'text-white');
+        b.classList.add('border-2', 'border-primary', 'text-primary');
+      });
+      btn.classList.add('bg-primary', 'text-white');
+      btn.classList.remove('border-2', 'border-primary', 'text-primary');
+      render();
+    });
+  });
+
+  document.getElementById('ver-mas-btn').addEventListener('click', () => {
+    limite += 3;
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>

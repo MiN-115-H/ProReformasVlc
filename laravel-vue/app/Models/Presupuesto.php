@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\TipoPresupuesto;
 
 class Presupuesto extends Model
 {
@@ -21,10 +22,17 @@ class Presupuesto extends Model
         'subtotal',
         'iva',
         'total',
+        'estado',
+        'tipo_presupuesto_id',
     ];
 
     protected $casts = [
         'fecha_presupuesto' => 'date',
         'lineas' => 'array',
     ];
+
+    public function tipoPresupuesto()
+    {
+        return $this->belongsTo(TipoPresupuesto::class);
+    }
 }

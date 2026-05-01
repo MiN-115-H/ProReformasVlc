@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Laravel
+laravel-vue/.env
+laravel-vue/storage/logs/
+laravel-vue/storage/framework/cache/
+laravel-vue/storage/framework/sessions/
+laravel-vue/storage/framework/views/
+laravel-vue/bootstrap/cache/
+laravel-vue/public/hot
+laravel-vue/public/build/
+
+# Build output (root level, from previous setup)
+dist/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,152 +1,275 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css" />
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Servicios | ProReformas Valencia</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Common+Sans:wght@400;700&display=swap"
-    />
-  </head>
-  <body>
-    <header>
-      <img
-        src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg"
-        alt="logo"
-        id="logo"
-      />
-      <nav>
-        <ul>
-          <li><a href="#">INICIO</a></li>
-          <li><a href="#">EMPRESA</a></li>
-          <li><a href="#">SERVICIOS</a></li>
-          <li class="submenu">
-            <a href="proyectos.html">PROYECTOS</a>
-            <ul class="dropdown">
-              <li><a href="#">COCINA</a></li>
-              <li><a href="#">BAÑOS</a></li>
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Playfair+Display:wght@700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#6B7E66",
+                        secondary: "#2D3436",
+                        "background-light": "#FFFFFF",
+                        "background-dark": "#121212",
+                    },
+                    fontFamily: {
+                        display: ["Montserrat", "sans-serif"],
+                        serif: ["Playfair Display", "serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "4px",
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 transition-colors duration-300">
+    <header
+        class="sticky top-0 z-50 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
+            <a class="flex items-center" href="index.html">
+                <img src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg" alt="Pro Reformas Valencia"
+                    class="h-12 md:h-14 w-auto object-contain" />
+            </a>
+            <ul class="hidden lg:flex items-center space-x-8 font-semibold text-sm uppercase tracking-wider">
+                <li><a class="hover:text-primary transition-colors" href="index.html">Inicio</a></li>
+                <li><a class="hover:text-primary transition-colors" href="empresa.html">Empresa</a></li>
+                <li><a class="text-primary border-b-2 border-primary pb-1" href="servicios.html">Servicios</a></li>
+                <li><a class="hover:text-primary transition-colors" href="proyectos.html">Proyectos</a></li>
+                <li><a class="hover:text-primary transition-colors" href="presupuesto.html">Presupuestos</a></li>
+                <li><a class="hover:text-primary transition-colors" href="contacta.html">Contacto</a></li>
             </ul>
-          </li>
-          <li><a href="#">CONTACTO</a></li>
-        </ul>
-      </nav>
+            <div class="lg:hidden">
+                <span class="material-symbols-outlined text-3xl">menu</span>
+            </div>
+        </nav>
     </header>
+    <section class="min-h-[52vh] py-16 md:py-20 flex items-center bg-cover bg-center bg-no-repeat"
+        style="background-image: linear-gradient(to right, rgba(17, 24, 39, 0.78), rgba(17, 24, 39, 0.45)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80');">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl bg-black/45 backdrop-blur-sm p-8 md:p-10 border-l-4 border-primary shadow-2xl">
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-5 uppercase tracking-tight">Nuestros Servicios</h1>
+                <p class="text-white text-base md:text-lg leading-relaxed max-w-xl">
+                    Soluciones integrales y personalizadas para transformar tu hogar o negocio con la máxima calidad y profesionalidad en Valencia.
+                </p>
+            </div>
+        </div>
+    </section>
 
-    <div class="tituloSeccion">
-      <h1 class="textoTitulo">NUESTROS SERVICIOS</h1>
-      <div class="subtituloSeccion">
-        <p class="textoSubtitulo">
-          Ofrecemos soluciones integrales y personalizadas para transformar tu
-          hogar o negocio con la máxima calidad y profesionalidad en Valencia.
-        </p>
-      </div>
+    <section class="py-20 bg-white dark:bg-background-dark">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80" alt="Servicio de albañilería" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Albañilería</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Tabiques, alicatados, pavimentos, maestreado de yeso y barrecha, escayolas y molduras.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=1200&q=80" alt="Servicio de carpintería" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Carpintería</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Puertas, armarios empotrados, suelos, tarimas, parquet y muebles a medida.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80" alt="Servicio de fontanería" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Fontanería</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Bajantes comunitarias, instalaciones multicapa, polipropileno y tuberías Wirsbo.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=1200&q=80" alt="Servicio de electricidad" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Electricidad</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Instalaciones, boletines, cuadros automáticos, iluminación y acometidas.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1562224380-08f5d2c7f37d?auto=format&fit=crop&w=1200&q=80" alt="Servicio de pintura" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Pintura</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Esponjados, alisados, estuco veneciano, tierras florentinas y gotelé.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1200&q=80" alt="Servicio de gas y calefacción" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Gas y Calefacción</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Instalaciones, boletines, calderas, calentadores, radiadores y toalleros.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=1200&q=80" alt="Servicio de aire acondicionado" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Aire Acondicionado</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Instalaciones, maquinaria y conductos para hogar, comercio e industria.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80" alt="Servicio de cristalería" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Cristalería</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Mamparas, ventanales, correderas, abatibles, oscilobatientes y lucernarios.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1523419409543-a5e549c1f7e8?auto=format&fit=crop&w=1200&q=80" alt="Servicio de persianas" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Persianas</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Enrollables de PVC o aluminio, motorizadas, de seguridad y mosquiteras.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1609941942332-4f0d8f7f5cde?auto=format&fit=crop&w=1200&q=80" alt="Servicio de cerrajería" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Cerrajería</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Puertas, ventanas, rejas fijas, abatibles, extensibles, barandillas y decoraciones.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?auto=format&fit=crop&w=1200&q=80" alt="Servicio de acero inoxidable" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Acero Inoxidable</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Barandillas, puertas, ventanas, perfilería y trabajos a medida en inoxidable.</p>
+                    </div>
+                </article>
+
+                <article class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1586208958839-06c17cacdf08?auto=format&fit=crop&w=1200&q=80" alt="Servicio de electrodomésticos" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent"></div>
+                        <h3 class="absolute bottom-4 left-4 right-4 text-white text-lg font-extrabold uppercase tracking-wider">Electrodomésticos</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Hornos, microondas, encimeras, lavadoras, secadoras, neveras, lavavajillas y campanas.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+    <div class="text-center pb-16">
+        <a href="#"
+            class="inline-block border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors px-8 py-3 uppercase tracking-widest text-sm font-bold">Ver
+            más...</a>
     </div>
-
-    <div class="contenedorCards">
-      <div class="card">
-        <div class="card-img"></div>
-        <div class="card-content">
-          <h3>Reformas Integrales</h3>
-          <p>
-            Transformamos completamente tu vivienda o local adaptándonos a tus
-            necesidades con acabados de alta calidad.
-          </p>
+    <footer class="bg-black text-gray-400 py-16 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div class="space-y-6">
+                <a class="inline-flex items-center" href="index.html">
+                    <img src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg" alt="Pro Reformas Valencia"
+                        class="h-14 w-auto object-contain rounded-sm bg-white p-1" />
+                </a>
+                <p class="text-xs leading-relaxed">
+                    En <span class="font-bold text-white">Pro Reformas Valencia</span>, queremos que sus sueños se hagan realidad. Con su ayuda y nuestra profesionalidad, el hogar que siempre quiso estará a su alcance.
+                </p>
+</div>
+            <div>
+                <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">
+                    Proyectos</h4>
+                <ul class="space-y-3 text-xs uppercase tracking-wider">
+                    <li><a class="hover:text-primary transition-colors" href="#">Cocinas</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Baños</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Parquet / Puertas</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Reforma Integral</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Más Trabajos</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">
+                    RGPD</h4>
+                <ul class="space-y-3 text-xs uppercase tracking-wider">
+                    <li><a class="hover:text-primary transition-colors" href="#">Política de Cookies</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Política de Privacidad</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="#">Aviso Legal</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-8 border-l-4 border-primary pl-4">
+                    Contacto</h4>
+                <ul class="space-y-4 text-xs">
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary text-lg">location_on</span>
+                        <span>C/ Torrente nº18 Valencia<br />46014 Valencia España</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-lg">call</span>
+                        <span>+34 606 939 035</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-lg">mail</span>
+                        <span>julian.proreformasvlc@gmail.com</span>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-img"></div>
-        <div class="card-content">
-          <h3>Diseño de Interiores</h3>
-          <p>
-            Creamos espacios funcionales y estéticos cuidando cada detalle para
-            lograr ambientes únicos y modernos.
-          </p>
+        <div
+            class="mt-16 pt-8 border-t border-gray-800 flex justify-center items-center text-center text-[10px] uppercase tracking-[0.2em]">
+            <p>© ProReformas Valencia 2024 | Todos los derechos reservados</p>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-img"></div>
-        <div class="card-content">
-          <h3>Reformas de Cocina</h3>
-          <p>
-            Diseñamos cocinas prácticas y elegantes con materiales duraderos y
-            soluciones personalizadas.
-          </p>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-img"></div>
-        <div class="card-content">
-          <h3>Reformas de Baño</h3>
-          <p>
-            Optimizamos el espacio de tu baño con diseños modernos, funcionales
-            y de fácil mantenimiento.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <footer class="footer">
-      <div class="footer-contenido">
-        <!-- IZQUIERDA: Logo + eslogan -->
-        <div class="footer-brand">
-          <div class="footer-logo">
-            <img
-              src="img/cropped-logotipo-alta-resolucion-con-fondo-blanco.jpg"
-              alt="logo"
-            />
-          </div>
-          <p class="footer-eslogan">
-            Expertos en reformas integrales en Valencia. Nuestra pasión es
-            convertir tus espacios en los lugares que siempre soñaste.
-          </p>
-        </div>
-
-        <!-- DERECHA: columnas -->
-        <div class="footer-links">
-          <div class="footer-col">
-            <h4>Servicios</h4>
-            <ul>
-              <li><a href="#">Reformas</a></li>
-              <li><a href="#">Cocinas</a></li>
-              <li><a href="#">Baños</a></li>
-              <li><a href="#">Interiorismo</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-col">
-            <h4>Legal</h4>
-            <ul>
-              <li><a href="#">Aviso legal</a></li>
-              <li><a href="#">Política de privacidad</a></li>
-              <li><a href="#">Cookies</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-col">
-            <h4>Contacto</h4>
-            <ul>
-              <li>
-                <p>C/ Torrente nº18 Valencia</p>
-                <p>46014 Valencia España</p>
-              </li>
-              <li><p>+34 606 939 035</p></li>
-              <li><p>julian.proreformasvlc@gmail.com</p></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Separador: ahora sí fuera del flex principal -->
-      <div class="separadorFooter"></div>
-
-      <div class="copyright">
-        <p>© 2024 ProReformasValencia. Todos los derechos reservados.</p>
-      </div>
     </footer>
-  </body>
+</body>
+
 </html>
+
+

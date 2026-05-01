@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import PageHero from '../components/PageHero.vue';
 
 const categoriaActiva = ref('todos');
+const limiteVisible = ref(6);
 
 const proyectos = [
   {
@@ -41,12 +42,37 @@ const proyectos = [
     descripcion: 'Unificacion visual con nuevos pavimentos y paleta neutra para mayor amplitud.',
     img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
   },
+  {
+    categoria: 'cocina',
+    titulo: 'Cocina rustica renovada',
+    descripcion: 'Actualizacion de carpinterias, encimera y zonas de trabajo manteniendo el estilo tradicional.',
+    img: 'https://images.unsplash.com/photo-1556909212-d5b604d0c90d?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    categoria: 'banos',
+    titulo: 'Bano contemporaneo en suite',
+    descripcion: 'Diseno funcional con plato extraplano, hornacinas y griferia empotrada.',
+    img: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    categoria: 'integral',
+    titulo: 'Vivienda completa en Ruzafa',
+    descripcion: 'Rediseno integral de vivienda con mejoras en eficiencia, iluminacion y distribucion.',
+    img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
+  },
 ];
 
 const proyectosFiltrados = computed(() => {
   if (categoriaActiva.value === 'todos') return proyectos;
   return proyectos.filter((p) => p.categoria === categoriaActiva.value);
 });
+
+const proyectosVisibles = computed(() => proyectosFiltrados.value.slice(0, limiteVisible.value));
+const hayMasProyectos = computed(() => proyectosFiltrados.value.length > limiteVisible.value);
+
+const verMasProyectos = () => {
+  limiteVisible.value += 3;
+};
 </script>
 
 <template>
@@ -91,7 +117,7 @@ const proyectosFiltrados = computed(() => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <article
-            v-for="proyecto in proyectosFiltrados"
+            v-for="proyecto in proyectosVisibles"
             :key="proyecto.titulo"
             class="group rounded-xl overflow-hidden bg-white border border-zinc-200 shadow-lg transition-transform hover:-translate-y-2"
           >
@@ -107,13 +133,14 @@ const proyectosFiltrados = computed(() => {
       </div>
     </section>
 
-    <div class="text-center pb-16">
-      <RouterLink
-        to="/contacto"
+    <div v-if="hayMasProyectos" class="text-center pb-16">
+      <button
+        type="button"
         class="inline-block border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors px-8 py-3 uppercase tracking-widest text-sm font-bold"
+        @click="verMasProyectos"
       >
-        Ver mas
-      </RouterLink>
+        Ver más
+      </button>
     </div>
   </div>
 </template>

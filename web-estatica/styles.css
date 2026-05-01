@@ -1,0 +1,88 @@
+:root {
+  --primary: #6B7E66;
+  --primary-dark: #566358;
+  --secondary: #2D3436;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  color: #1f2937;
+}
+
+/* ── Nav active link ── */
+nav a.active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 2px;
+}
+
+/* ── Hamburger mobile menu ── */
+#mobile-menu { display: none; }
+#mobile-menu.open { display: block; }
+
+/* ── Hero gradient for home ── */
+.index-hero-gradient {
+  background: linear-gradient(to right, rgba(0,0,0,0.72), rgba(0,0,0,0.35));
+}
+
+/* ── Disclaimer box (presupuestos) ── */
+.disclaimer-box {
+  border: 1px solid #f0d5a8;
+  border-left: 6px solid #b7791f;
+  background: linear-gradient(135deg, #fffbf2, #fff6e5);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+}
+.disclaimer-title {
+  font-size: 0.9rem; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: #7c5318; margin-bottom: 0.35rem;
+}
+.disclaimer-text { color: #5f461f; line-height: 1.55; }
+
+/* ── Print (presupuestos) ── */
+.print-only { display: none; }
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  nav, footer, .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .print-sheet { color: #1f2937; font-size: 12px; }
+
+  .print-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 2px solid #d1d5db;
+    padding-bottom: 10px; margin-bottom: 14px;
+  }
+  .brand-row { display: flex; align-items: center; gap: 10px; }
+  .print-logo { width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db; }
+  .print-company { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.04em; }
+  .print-doc-type { margin: 2px 0 0; font-size: 13px; color: #6b7280; }
+  .print-meta { text-align: right; font-size: 12px; color: #4b5563; }
+
+  .print-block { margin-bottom: 16px; }
+  .print-block h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 8px; }
+  .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 12px; }
+  .print-grid p.full { grid-column: span 2; }
+
+  .print-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .print-table th, .print-table td { border: 1px solid #d1d5db; padding: 5px 8px; text-align: left; }
+  .print-table th { background: #f9fafb; font-weight: 700; }
+  .print-table td:last-child, .print-table th:last-child { text-align: right; }
+
+  .print-total { margin-top: 12px; border-top: 2px solid #d1d5db; padding-top: 8px; }
+  .print-total p { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+  .grand-total { font-size: 15px !important; font-weight: 800; border-top: 1px solid #d1d5db; margin-top: 4px; padding-top: 6px; }
+
+  .print-company-footer {
+    margin-top: 24px; padding-top: 12px; border-top: 2px solid #d1d5db;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .company-footer-brand { display: flex; align-items: center; gap: 10px; }
+  .company-footer-logo { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; }
+  .company-footer-name { font-weight: 800; font-size: 14px; }
+  .company-footer-tag { font-size: 11px; color: #6b7280; }
+  .company-footer-data { font-size: 11px; color: #374151; text-align: right; line-height: 1.7; }
+}

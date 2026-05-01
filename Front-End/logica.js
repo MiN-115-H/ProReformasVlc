@@ -72,26 +72,33 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!lineaForm) return; // Si no estamos en la página de presupuesto, salir
 
   let presupuestoLineas = [];
+  let datosPersonalesConfirmados = false;
   const IVA_RATE = 0.21;
 
-  // Mock Base de Datos de Conceptos (Tabla: conf_concepto_presupuesto)
-  const conceptosDB = [
-    { id: 1, descripcion: "Derribo de tabiques", precio_base: 15.50, unidad_medida: "m2" },
-    { id: 2, descripcion: "Pintura plástica lisa", precio_base: 8.00, unidad_medida: "m2" },
-    { id: 3, descripcion: "Instalación de punto de luz", precio_base: 45.00, unidad_medida: "ud" },
-    { id: 4, descripcion: "Alicatado de baño", precio_base: 35.00, unidad_medida: "m2" },
-    { id: 5, descripcion: "Suelo laminado AC5", precio_base: 22.00, unidad_medida: "m2" },
-    { id: 6, descripcion: "Mano de obra oficial", precio_base: 25.00, unidad_medida: "hx" },
-    { id: 7, descripcion: "Partida alzada de fontanería", precio_base: 300.00, unidad_medida: "pa" }
-  ];
+  // Precios medios orientativos para estimación rápida (no precio final).
+  const conceptosPorCategoria = {
+    cocina: [
+      { id: 1, descripcion: "Poner suelos", precio_base: 39.50 },
+      { id: 2, descripcion: "Alicatado", precio_base: 44.00 }
+    ],
+    bano: [
+      { id: 3, descripcion: "Cambiar bañera", precio_base: 890.00 },
+      { id: 4, descripcion: "Alicatado", precio_base: 48.00 },
+      { id: 5, descripcion: "Poner suelos", precio_base: 41.00 }
+    ]
+  };
 
   // DOM Elements
   const ticketFecha = document.getElementById('ticketFecha');
-  const ticketClientInfo = document.getElementById('ticketClientInfo');
   
   const inputNombre = document.getElementById('cliente_nombre');
   const inputTelefono = document.getElementById('cliente_telefono');
+  const inputEmail = document.getElementById('cliente_email');
   const inputDireccion = document.getElementById('direccion');
+  const inputCiudad = document.getElementById('ciudad');
+  const btnConfirmarDatos = document.getElementById('btnConfirmarDatos');
+  const estadoConfirmacionDatos = document.getElementById('estadoConfirmacionDatos');
+  const btnImprimir = document.getElementById('btnGenerarPDF');
 
   const ticketLines = document.getElementById('ticketLines');
   
@@ -103,60 +110,85 @@ document.addEventListener('DOMContentLoaded', () => {
   const today = new Date();
   ticketFecha.textContent = today.toLocaleDateString();
 
-  // Actualizar info de cliente en el ticket en vivo
-  function updateClientInfo() {
-    const nombre = inputNombre.value || 'Cliente sin nombre';
-    const tel = inputTelefono.value ? ` - ${inputTelefono.value}` : '';
-    const dir = inputDireccion.value ? `<br>${inputDireccion.value}` : '';
-    ticketClientInfo.innerHTML = `<strong>${nombre}</strong>${tel}${dir}`;
+  function marcarDatosSinConfirmar() {
+    datosPersonalesConfirmados = false;
+    estadoConfirmacionDatos.textContent = 'Datos pendientes de confirmar';
+    estadoConfirmacionDatos.classList.remove('text-green-600');
+    estadoConfirmacionDatos.classList.add('text-gray-600');
   }
 
-  inputNombre.addEventListener('input', updateClientInfo);
-  inputTelefono.addEventListener('input', updateClientInfo);
-  inputDireccion.addEventListener('input', updateClientInfo);
+  [inputNombre, inputTelefono, inputEmail, inputDireccion, inputCiudad].forEach((input) => {
+    input.addEventListener('input', () => {
+      marcarDatosSinConfirmar();
+    });
+  });
 
+  btnConfirmarDatos.addEventListener('click', () => {
+    if (!inputNombre.value.trim() || !inputTelefono.value.trim() || !inputEmail.value.trim()) {
+      alert('Para confirmar, rellena al menos nombre, teléfono y correo electrónico.');
+      datosPersonalesConfirmados = false;
+      marcarDatosSinConfirmar();
+      return;
+    }
+
+    datosPersonalesConfirmados = true;
+    estadoConfirmacionDatos.textContent = 'Datos personales confirmados';
+    estadoConfirmacionDatos.classList.remove('text-gray-600');
+    estadoConfirmacionDatos.classList.add('text-green-600');
+  });
+
+  const selectCategoria = document.getElementById('categoriaConcepto');
   const selectConcepto = document.getElementById('descripcionConcepto');
-  const selectUnidad = document.getElementById('unidadMedida');
-  const inputPrecio = document.getElementById('precioUnitario');
   const inputCantidad = document.getElementById('cantidad');
 
-  // Llenar el select de conceptos
-  conceptosDB.forEach(concepto => {
-    const opt = document.createElement('option');
-    opt.value = concepto.id;
-    opt.textContent = concepto.descripcion;
-    selectConcepto.appendChild(opt);
+  function cargarTrabajosPorCategoria(categoria) {
+    selectConcepto.innerHTML = '';
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent = categoria ? 'Selecciona un trabajo...' : 'Primero elige una categoría...';
+    selectConcepto.appendChild(placeholder);
+
+    if (!categoria || !conceptosPorCategoria[categoria]) return;
+
+    conceptosPorCategoria[categoria].forEach((concepto) => {
+      const opt = document.createElement('option');
+      opt.value = concepto.id;
+      opt.textContent = concepto.descripcion;
+      selectConcepto.appendChild(opt);
+    });
+  }
+
+  selectCategoria.addEventListener('change', (e) => {
+    cargarTrabajosPorCategoria(e.target.value);
+    inputCantidad.focus();
   });
 
-  // Al seleccionar un concepto, rellenar unidad y precio base
-  selectConcepto.addEventListener('change', (e) => {
-    const selectedId = parseInt(e.target.value);
-    const concepto = conceptosDB.find(c => c.id === selectedId);
-    
-    if (concepto) {
-      selectUnidad.value = concepto.unidad_medida;
-      inputPrecio.value = concepto.precio_base.toFixed(2);
-      inputCantidad.focus(); // mover el foco a la cantidad para agilizar
-    }
-  });
+  function buscarConcepto(categoria, idConcepto) {
+    if (!categoria || !conceptosPorCategoria[categoria]) return null;
+    return conceptosPorCategoria[categoria].find((c) => c.id === idConcepto) || null;
+  }
 
   // Manejar el submit del formulario de conceptos
   lineaForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    if(selectConcepto.value === "") return; // Asegurar selección válida del desplegable
+    if (selectCategoria.value === '' || selectConcepto.value === '') return;
+
+    const categoria = selectCategoria.value;
+    const conceptoSeleccionado = buscarConcepto(categoria, parseInt(selectConcepto.value, 10));
+    if (!conceptoSeleccionado) return;
 
     const desc = selectConcepto.options[selectConcepto.selectedIndex].text;
-    const unid = selectUnidad.value;
     const cant = parseFloat(inputCantidad.value);
-    const prec = parseFloat(inputPrecio.value);
+    const prec = conceptoSeleccionado.precio_base;
 
-    // Reemplaza la coma por punto en precio por si la validación lo permite
     if (desc && cant > 0 && prec >= 0) {
       const newLine = {
         id: Date.now(),
         descripcion: desc,
-        unidad: unid,
         cantidad: cant,
         precio: prec,
         subtotal: cant * prec
@@ -166,11 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderLines();
       
       // Limpiar inputs a su estado inicial
+      selectCategoria.value = '';
       selectConcepto.value = '';
-      selectUnidad.value = 'm2'; // valor por defecto
+      cargarTrabajosPorCategoria('');
       inputCantidad.value = '';
-      inputPrecio.value = '';
-      selectConcepto.focus();
+      selectCategoria.focus();
     }
   });
 
@@ -198,9 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
       div.innerHTML = `
         <div class="line-desc">
           ${line.descripcion}
-          <small>${line.cantidad} ${line.unidad} x ${line.precio.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</small>
+          <small>Cantidad: ${line.cantidad}</small>
         </div>
-        <div class="line-qty">${line.cantidad} ${line.unidad}</div>
+        <div class="line-qty">x${line.cantidad}</div>
         <div class="line-price">${line.subtotal.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</div>
         <div class="line-delete">
           <button class="btn-delete" onclick="eliminarLinea(${line.id})" title="Eliminar concepto">
@@ -240,4 +272,15 @@ document.addEventListener('DOMContentLoaded', () => {
       renderLines();
     }
   };
+
+  btnImprimir.addEventListener('click', () => {
+    if (!datosPersonalesConfirmados) {
+      alert('Debes rellenar y confirmar tus datos personales antes de imprimir el presupuesto.');
+      return;
+    }
+
+    window.print();
+  });
+
+  cargarTrabajosPorCategoria('');
 });
