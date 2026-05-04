@@ -12,12 +12,12 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 100);
             $table->string('email', 150);
-            $table->string('telefono', 20)->nullable();
+            $table->string('telefono', 20)->nullable()->comment('Teléfono del contacto');
             $table->string('asunto', 150)->nullable();
             $table->text('mensaje');
-            $table->boolean('leido')->default(false);
+            $table->boolean('leido')->default(false)->comment('Indica si el mensaje fue leído');
             $table->boolean('respondido')->default(false);
-            $table->timestamp('fecha_recepcion')->useCurrent();
+            $table->timestamp('fecha_recepcion')->useCurrent()->comment('Fecha de recepción');
             $table->timestamps();
         });
     }

@@ -10,14 +10,14 @@ return new class extends Migration
     {
         Schema::create('presupuestos', function (Blueprint $table) {
             $table->id();
-            $table->string('cliente_nombre');
-            $table->string('cliente_telefono');
-            $table->string('cliente_email');
-            $table->string('direccion')->nullable();
+            $table->string('cliente_nombre')->comment('Nombre del cliente');
+            $table->string('cliente_telefono')->comment('Teléfono de contacto');
+            $table->string('cliente_email')->comment('Correo electrónico del cliente');
+            $table->string('direccion')->nullable()->comment('Dirección de la obra');
             $table->string('ciudad')->nullable();
-            $table->text('observaciones')->nullable();
-            $table->date('fecha_presupuesto');
-            $table->json('lineas');
+            $table->text('observaciones')->nullable()->comment('Observaciones del presupuesto');
+            $table->date('fecha_presupuesto')->comment('Fecha de emisión');
+            $table->json('lineas')->comment('Líneas del presupuesto en formato JSON');
             $table->decimal('subtotal', 12, 2);
             $table->decimal('iva', 12, 2);
             $table->decimal('total', 12, 2);

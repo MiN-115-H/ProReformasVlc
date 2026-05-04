@@ -12,6 +12,11 @@ class Concepto extends Model
         'unidad_id',
         'tipo_presupuesto_id',
         'activo',
+        'sugerencias',
+    ];
+
+    protected $casts = [
+        'sugerencias' => 'array',
     ];
 
     public function unidad()

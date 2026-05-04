@@ -6,8 +6,8 @@ import PageHero from '../components/PageHero.vue';
   <div>
     <PageHero
       title="Nuestra Empresa"
-      text="En Pro Reformas Valencia, transformamos espacios y cumplimos suenos. Somos referentes en reformas integrales en toda la Comunidad Valenciana."
-      image="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1800&q=80"
+      text="En Pro Reformas Valencia, transformamos espacios y cumplimos sueños. Somos referentes en reformas integrales en toda la Comunidad Valenciana."
+      image="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1800&q=80"
     />
 
     <section class="py-20 bg-background-light" id="historia">
@@ -17,7 +17,7 @@ import PageHero from '../components/PageHero.vue';
             <h2 class="text-3xl font-black uppercase tracking-widest text-zinc-800 mb-2">Nuestra Historia</h2>
             <div class="w-24 h-1 bg-primary mb-8"></div>
             <div class="space-y-6 text-zinc-600 leading-relaxed">
-              <p>Nacimos de una pasion compartida por la arquitectura y el diseno de interiores.</p>
+              <p>Nacimos de una pasión compartida por la arquitectura y el diseño de interiores.</p>
               <p>Nuestra trayectoria se basa en la transparencia y la honestidad en cada reforma.</p>
               <p>Trabajamos con proveedores de confianza para garantizar calidad y plazos de entrega.</p>
             </div>

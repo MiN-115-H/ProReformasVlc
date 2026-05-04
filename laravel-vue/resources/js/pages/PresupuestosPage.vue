@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import PageHero from '../components/PageHero.vue';
 
 const IVA_RATE = 0.21;
@@ -16,27 +16,46 @@ const datosPersonalesConfirmados = ref(false);
 const categoriaSeleccionada = ref('');
 const conceptoSeleccionadoId = ref('');
 const cantidad = ref(1);
+const extrasSeleccionados = ref([]);  // IDs de sugerencias marcadas
+const otrosDescripcion = ref('');     // Texto libre para OTRAS
 
 const lineas = ref([]);
 const logoUrl = '/img/logo.jpg';
 
-const conceptosPorCategoria = {
-  cocina: [
-    { id: 1, descripcion: 'Poner suelos', precio_base: 39.5 },
-    { id: 2, descripcion: 'Alicatado', precio_base: 44.0 },
-  ],
-  bano: [
-    { id: 3, descripcion: 'Cambiar banera', precio_base: 890.0 },
-    { id: 4, descripcion: 'Alicatado', precio_base: 48.0 },
-    { id: 5, descripcion: 'Poner suelos', precio_base: 41.0 },
-  ],
-};
+const tipos = ref([]);
+const conceptosTodos = ref([]);
+const cargando = ref(true);
+
+onMounted(async () => {
+  try {
+    const res = await fetch('/api/conceptos');
+    const data = await res.json();
+    tipos.value = data.tipos;
+    conceptosTodos.value = data.conceptos;
+  } finally {
+    cargando.value = false;
+  }
+});
 
 const ticketFecha = new Date().toLocaleDateString('es-ES');
 
 const conceptosDisponibles = computed(() => {
   if (!categoriaSeleccionada.value) return [];
-  return conceptosPorCategoria[categoriaSeleccionada.value] || [];
+  return conceptosTodos.value.filter(
+    (c) => String(c.tipo_presupuesto_id) === String(categoriaSeleccionada.value),
+  );
+});
+
+const conceptoSeleccionado = computed(() =>
+  conceptosTodos.value.find((c) => String(c.id) === String(conceptoSeleccionadoId.value)) ?? null,
+);
+
+const esOtras = computed(() => conceptoSeleccionado.value?.descripcion === 'OTRAS');
+
+const sugerenciasDisponibles = computed(() => {
+  const ids = conceptoSeleccionado.value?.sugerencias ?? [];
+  if (!ids.length) return [];
+  return conceptosTodos.value.filter((c) => ids.includes(c.id));
 });
 
 const subtotal = computed(() => lineas.value.reduce((acc, line) => acc + line.subtotal, 0));
@@ -55,9 +74,14 @@ watch(categoriaSeleccionada, () => {
   conceptoSeleccionadoId.value = '';
 });
 
+watch(conceptoSeleccionadoId, () => {
+  extrasSeleccionados.value = [];
+  otrosDescripcion.value = '';
+});
+
 const confirmarDatos = () => {
   if (!clienteNombre.value.trim() || !clienteTelefono.value.trim() || !clienteEmail.value.trim()) {
-    alert('Para confirmar, rellena al menos nombre, telefono y correo electronico.');
+    alert('Para confirmar, rellena al menos nombre, teléfono y correo electrónico.');
     return;
   }
 
@@ -67,20 +91,43 @@ const confirmarDatos = () => {
 const anadirConcepto = () => {
   if (!categoriaSeleccionada.value || !conceptoSeleccionadoId.value) return;
 
-  const concepto = conceptosDisponibles.value.find((c) => String(c.id) === String(conceptoSeleccionadoId.value));
+  const concepto = conceptoSeleccionado.value;
   if (!concepto || Number(cantidad.value) <= 0) return;
+
+  // Concepto principal (o descripcion libre para OTRAS)
+  const descripcionPrincipal = esOtras.value
+    ? (otrosDescripcion.value.trim() || 'OTRAS')
+    : concepto.descripcion;
+
+  const precioBase = Number(concepto.precio_base);
 
   lineas.value.push({
     id: Date.now(),
-    descripcion: concepto.descripcion,
+    descripcion: descripcionPrincipal,
     cantidad: Number(cantidad.value),
-    precio: concepto.precio_base,
-    subtotal: Number(cantidad.value) * concepto.precio_base,
+    precio: precioBase,
+    subtotal: Number(cantidad.value) * precioBase,
   });
+
+  // Extras seleccionados (siempre cantidad 1)
+  for (const extraId of extrasSeleccionados.value) {
+    const extra = conceptosTodos.value.find((c) => c.id === extraId);
+    if (!extra) continue;
+    const extraPrecio = Number(extra.precio_base);
+    lineas.value.push({
+      id: Date.now() + extraId,
+      descripcion: extra.descripcion,
+      cantidad: 1,
+      precio: extraPrecio,
+      subtotal: extraPrecio,
+    });
+  }
 
   categoriaSeleccionada.value = '';
   conceptoSeleccionadoId.value = '';
   cantidad.value = 1;
+  extrasSeleccionados.value = [];
+  otrosDescripcion.value = '';
 };
 
 const eliminarLinea = (id) => {
@@ -93,7 +140,7 @@ const imprimirPresupuesto = () => {
     return;
   }
   if (lineas.value.length === 0) {
-    alert('Anade al menos un concepto antes de descargar el presupuesto.');
+    alert('Añade al menos un concepto antes de descargar el presupuesto.');
     return;
   }
   window.print();
@@ -109,16 +156,16 @@ const formatEUR = (value) =>
       <PageHero
         title="Presupuestos"
         text="Calcula un presupuesto estimado y solicita una propuesta detallada a medida."
-        image="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=80"
+        image="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1800&q=80"
       />
 
       <main class="max-w-7xl mx-auto px-6 py-24">
         <div class="disclaimer-box mb-8">
-          <p class="disclaimer-title">Informacion orientativa</p>
+          <p class="disclaimer-title">Información orientativa</p>
           <p class="disclaimer-text">
-            Este documento tiene caracter meramente informativo y se basa en precios medios de mercado para materiales
-            y mano de obra. El importe final puede variar segun mediciones definitivas, calidades elegidas y
-            condiciones reales de ejecucion en obra.
+            Este documento tiene carácter meramente informativo y se basa en precios medios de mercado para materiales
+            y mano de obra. El importe final puede variar según mediciones definitivas, calidades elegidas y
+            condiciones reales de ejecución en obra.
           </p>
         </div>
 
@@ -141,7 +188,7 @@ const formatEUR = (value) =>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-semibold mb-2" for="cliente_telefono">Telefono</label>
+                    <label class="block text-sm font-semibold mb-2" for="cliente_telefono">Teléfono</label>
                     <input
                       id="cliente_telefono"
                       v-model="clienteTelefono"
@@ -152,7 +199,7 @@ const formatEUR = (value) =>
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-semibold mb-2" for="cliente_email">Correo Electronico</label>
+                    <label class="block text-sm font-semibold mb-2" for="cliente_email">Correo Electrónico</label>
                     <input
                       id="cliente_email"
                       v-model="clienteEmail"
@@ -166,7 +213,7 @@ const formatEUR = (value) =>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-semibold mb-2" for="direccion">Direccion del Proyecto</label>
+                    <label class="block text-sm font-semibold mb-2" for="direccion">Dirección del Proyecto</label>
                     <input
                       id="direccion"
                       v-model="clienteDireccion"
@@ -217,24 +264,27 @@ const formatEUR = (value) =>
             </div>
 
             <div class="bg-white rounded-lg shadow-lg p-8">
-              <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 text-primary">2. Anadir Conceptos</h2>
+              <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 text-primary">2. Añadir Conceptos</h2>
               <form class="space-y-4" @submit.prevent="anadirConcepto">
                 <div>
-                  <label class="block text-sm font-semibold mb-2" for="categoria">Categoria de Reforma</label>
+                  <label class="block text-sm font-semibold mb-2" for="categoria">Categoría de Reforma</label>
                   <select
                     id="categoria"
                     v-model="categoriaSeleccionada"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                     required
                   >
-                    <option value="" disabled>Selecciona una categoria...</option>
-                    <option value="cocina">Cocina</option>
-                    <option value="bano">Bano</option>
+                    <option value="" disabled>
+                      {{ cargando ? 'Cargando categorías...' : 'Selecciona una categoría...' }}
+                    </option>
+                    <option v-for="tipo in tipos" :key="tipo.id" :value="String(tipo.id)">
+                      {{ tipo.nombre }}
+                    </option>
                   </select>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-semibold mb-2" for="concepto">Trabajo Especifico</label>
+                  <label class="block text-sm font-semibold mb-2" for="concepto">Trabajo Específico</label>
                   <select
                     id="concepto"
                     v-model="conceptoSeleccionadoId"
@@ -243,7 +293,7 @@ const formatEUR = (value) =>
                     required
                   >
                     <option value="" disabled>
-                      {{ categoriaSeleccionada ? 'Selecciona un trabajo...' : 'Primero elige una categoria...' }}
+                      {{ categoriaSeleccionada ? 'Selecciona un trabajo...' : 'Primero elige una categoría...' }}
                     </option>
                     <option
                       v-for="concepto in conceptosDisponibles"
@@ -253,6 +303,43 @@ const formatEUR = (value) =>
                       {{ concepto.descripcion }}
                     </option>
                   </select>
+                </div>
+
+                <!-- Campo libre para OTRAS -->
+                <div v-if="esOtras">
+                  <label class="block text-sm font-semibold mb-2" for="otros_desc">Describe el servicio que necesitas</label>
+                  <input
+                    id="otros_desc"
+                    v-model="otrosDescripcion"
+                    type="text"
+                    placeholder="Ej. Cambio de radiadores, reforma integral..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                    required
+                  />
+                </div>
+
+                <!-- Sugerencias / Extras -->
+                <div v-if="sugerenciasDisponibles.length" class="border border-amber-200 bg-amber-50 rounded-lg p-4">
+                  <p class="text-sm font-bold text-amber-800 mb-3 uppercase tracking-wide">
+                    ¿También necesitas alguno de estos trabajos relacionados?
+                  </p>
+                  <div class="space-y-2">
+                    <label
+                      v-for="extra in sugerenciasDisponibles"
+                      :key="extra.id"
+                      class="flex items-center gap-3 cursor-pointer group"
+                    >
+                      <input
+                        type="checkbox"
+                        :value="extra.id"
+                        v-model="extrasSeleccionados"
+                        class="w-4 h-4 accent-primary"
+                      />
+                      <span class="text-sm text-gray-700 group-hover:text-primary transition-colors">
+                        {{ extra.descripcion }}
+                      </span>
+                    </label>
+                  </div>
                 </div>
 
                 <div>
@@ -272,7 +359,7 @@ const formatEUR = (value) =>
                   type="submit"
                   class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold uppercase transition-all"
                 >
-                  + Anadir al Presupuesto
+                  + Añadir al Presupuesto
                 </button>
               </form>
             </div>
@@ -292,7 +379,7 @@ const formatEUR = (value) =>
 
               <div class="space-y-2 mb-6">
                 <div v-if="lineas.length === 0" class="text-center text-gray-500 py-8">
-                  <p>Aun no has anadido conceptos a tu presupuesto.</p>
+                  <p>Aún no has añadido conceptos a tu presupuesto.</p>
                 </div>
                 <div
                   v-for="linea in lineas"

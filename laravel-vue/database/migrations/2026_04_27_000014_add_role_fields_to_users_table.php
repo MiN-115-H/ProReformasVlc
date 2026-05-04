@@ -9,8 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('rol', ['admin', 'editor'])->default('editor')->after('password');
-            $table->boolean('activo')->default(true)->after('rol');
+            $table->enum('rol', ['admin', 'editor'])
+                ->default('editor')
+                ->after('password')
+                ->comment('Rol del usuario');
+            $table->boolean('activo')
+                ->default(true)
+                ->after('rol')
+                ->comment('Indica si la cuenta está activa');
         });
     }
 

@@ -9,8 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('presupuestos', function (Blueprint $table) {
-            $table->enum('estado', ['pendiente', 'aceptado', 'rechazado'])->default('pendiente')->after('cliente_telefono');
-            $table->foreignId('tipo_presupuesto_id')->nullable()->after('estado')->constrained('tipos_presupuesto')->nullOnDelete();
+            $table->enum('estado', ['pendiente', 'aceptado', 'rechazado'])
+                ->default('pendiente')
+                ->after('cliente_telefono')
+                ->comment('Estado de aprobación del presupuesto');
+            $table->foreignId('tipo_presupuesto_id')
+                ->nullable()
+                ->after('estado')
+                ->constrained('tipos_presupuesto')
+                ->nullOnDelete()
+                ->comment('Tipo de presupuesto seleccionado');
         });
     }
 

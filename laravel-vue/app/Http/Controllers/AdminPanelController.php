@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AdminPanelController extends Controller
 {
@@ -32,6 +33,7 @@ class AdminPanelController extends Controller
                     'tipo_presupuesto_id' => $concepto->tipo_presupuesto_id,
                     'unidad_abrev' => $concepto->unidad?->abreviatura,
                     'tipo_nombre' => $concepto->tipoPresupuesto?->nombre,
+                    'activo' => (bool) $concepto->activo,
                 ];
             })->values();
 
@@ -83,6 +85,23 @@ class AdminPanelController extends Controller
         return response()->json(['message' => 'Tipo eliminado.']);
     }
 
+    public function updateTipo(Request $request, TipoPresupuesto $tipo): JsonResponse
+    {
+        $validated = $request->validate([
+            'nombre' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('tipos_presupuesto', 'nombre')->ignore($tipo->id),
+            ],
+            'descripcion' => ['nullable', 'string'],
+        ]);
+
+        $tipo->update($validated);
+
+        return response()->json($tipo);
+    }
+
     public function storeUnidad(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -101,6 +120,23 @@ class AdminPanelController extends Controller
         return response()->json(['message' => 'Unidad eliminada.']);
     }
 
+    public function updateUnidad(Request $request, Unidad $unidad): JsonResponse
+    {
+        $validated = $request->validate([
+            'nombre' => ['required', 'string', 'max:100'],
+            'abreviatura' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('unidades', 'abreviatura')->ignore($unidad->id),
+            ],
+        ]);
+
+        $unidad->update($validated);
+
+        return response()->json($unidad);
+    }
+
     public function storeConcepto(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -113,6 +149,36 @@ class AdminPanelController extends Controller
         $concepto = Concepto::create($validated + ['activo' => true]);
 
         return response()->json($concepto, 201);
+    }
+
+    public function updateConcepto(Request $request, Concepto $concepto): JsonResponse
+    {
+        $validated = $request->validate([
+            'descripcion' => ['sometimes', 'required', 'string', 'max:150'],
+            'precio_base' => ['sometimes', 'required', 'numeric', 'gte:0'],
+            'unidad_id' => ['sometimes', 'required', 'exists:unidades,id'],
+            'tipo_presupuesto_id' => ['sometimes', 'required', 'exists:tipos_presupuesto,id'],
+            'activo' => ['sometimes', 'required', 'boolean'],
+        ]);
+
+        if ($validated === []) {
+            return response()->json(['message' => 'No se enviaron cambios.'], 422);
+        }
+
+        $concepto->update($validated);
+
+        $concepto->load(['unidad:id,abreviatura', 'tipoPresupuesto:id,nombre']);
+
+        return response()->json([
+            'id' => $concepto->id,
+            'descripcion' => $concepto->descripcion,
+            'precio_base' => (float) $concepto->precio_base,
+            'unidad_id' => $concepto->unidad_id,
+            'tipo_presupuesto_id' => $concepto->tipo_presupuesto_id,
+            'unidad_abrev' => $concepto->unidad?->abreviatura,
+            'tipo_nombre' => $concepto->tipoPresupuesto?->nombre,
+            'activo' => (bool) $concepto->activo,
+        ]);
     }
 
     public function deleteConcepto(Concepto $concepto): JsonResponse
@@ -226,6 +292,29 @@ class AdminPanelController extends Controller
 
         $usuario->delete();
         return response()->json(['message' => 'Usuario eliminado.']);
+    }
+
+    public function updateUsuario(Request $request, User $usuario): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'email' => [
+                'required',
+                'email',
+                'max:150',
+                Rule::unique('users', 'email')->ignore($usuario->id),
+            ],
+        ]);
+
+        $usuario->update($validated);
+
+        return response()->json([
+            'id' => $usuario->id,
+            'name' => $usuario->name,
+            'email' => $usuario->email,
+            'rol' => $usuario->rol,
+            'activo' => (bool) $usuario->activo,
+        ]);
     }
 
     public function updateEstadoPresupuesto(Request $request, Presupuesto $presupuesto): JsonResponse

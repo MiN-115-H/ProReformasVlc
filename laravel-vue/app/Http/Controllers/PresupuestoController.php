@@ -2,13 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concepto;
 use App\Models\Presupuesto;
+use App\Models\TipoPresupuesto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class PresupuestoController extends Controller
 {
+    public function conceptos(): JsonResponse
+    {
+        $tipos = TipoPresupuesto::orderBy('nombre')->get(['id', 'nombre']);
+
+        $conceptos = Concepto::where('activo', true)
+            ->orderBy('descripcion')
+            ->get(['id', 'descripcion', 'precio_base', 'tipo_presupuesto_id', 'sugerencias']);
+
+        return response()->json([
+            'tipos' => $tipos,
+            'conceptos' => $conceptos,
+        ]);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([

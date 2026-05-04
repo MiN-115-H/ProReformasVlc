@@ -7,7 +7,7 @@ const menu = [
   { id: 'conceptos', label: 'Conceptos' },
   { id: 'presupuestos', label: 'Presupuestos' },
   { id: 'servicios', label: 'Servicios' },
-  { id: 'albumes', label: 'Albumes' },
+  { id: 'albumes', label: 'Álbumes' },
   { id: 'usuarios', label: 'Usuarios' },
 ];
 
@@ -25,8 +25,12 @@ const albumes = ref([]);
 const usuarios = ref([]);
 
 // Inline editing
-const editingId = reactive({ servicio: null, album: null });
+const editingId = reactive({ tipo: null, unidad: null, concepto: null, servicio: null, album: null, usuario: null });
 const editBuffer = reactive({ nombre: '', descripcion: '' });
+const conceptoEditBuffer = reactive({ descripcion: '', precio_base: '', unidad_id: '', tipo_presupuesto_id: '' });
+const tipoEditBuffer = reactive({ nombre: '', descripcion: '' });
+const unidadEditBuffer = reactive({ nombre: '', abreviatura: '' });
+const usuarioEditBuffer = reactive({ name: '', email: '' });
 
 const tipoForm = reactive({ nombre: '', descripcion: '' });
 const unidadForm = reactive({ nombre: '', abreviatura: '' });
@@ -58,12 +62,12 @@ const request = async (url, options = {}) => {
 
   if (response.status === 401 || response.status === 403) {
     window.location.href = '/login';
-    throw new Error('Necesitas iniciar sesion como administrador.');
+    throw new Error('Necesitas iniciar sesión como administrador.');
   }
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null);
-    throw new Error(payload?.message || 'No se pudo completar la operacion.');
+    throw new Error(payload?.message || 'No se pudo completar la operación.');
   }
 
   if (response.status === 204) return null;
@@ -108,6 +112,25 @@ const removeTipo = (id) => withFeedback(async () => {
   await loadPanelData();
 });
 
+const startEditTipo = (tipo) => {
+  editingId.tipo = tipo.id;
+  tipoEditBuffer.nombre = tipo.nombre;
+  tipoEditBuffer.descripcion = tipo.descripcion || '';
+};
+
+const saveTipo = (id) => withFeedback(async () => {
+  await request(`/api/admin/tipos-presupuesto/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      nombre: tipoEditBuffer.nombre,
+      descripcion: tipoEditBuffer.descripcion,
+    }),
+  });
+
+  editingId.tipo = null;
+  await loadPanelData();
+});
+
 const addUnidad = () => withFeedback(async () => {
   await request('/api/admin/unidades', { method: 'POST', body: JSON.stringify(unidadForm) });
   unidadForm.nombre = '';
@@ -118,6 +141,56 @@ const addUnidad = () => withFeedback(async () => {
 const removeUnidad = (id) => withFeedback(async () => {
   if (!confirm('¿Eliminar esta unidad?')) return;
   await request(`/api/admin/unidades/${id}`, { method: 'DELETE' });
+  await loadPanelData();
+});
+
+const startEditUnidad = (unidad) => {
+  editingId.unidad = unidad.id;
+  unidadEditBuffer.nombre = unidad.nombre;
+  unidadEditBuffer.abreviatura = unidad.abreviatura;
+};
+
+const saveUnidad = (id) => withFeedback(async () => {
+  await request(`/api/admin/unidades/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      nombre: unidadEditBuffer.nombre,
+      abreviatura: unidadEditBuffer.abreviatura,
+    }),
+  });
+
+  editingId.unidad = null;
+  await loadPanelData();
+});
+
+const toggleConcepto = (concepto) => withFeedback(async () => {
+  const payload = await request(`/api/admin/conceptos/${concepto.id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ activo: !concepto.activo }),
+  });
+  concepto.activo = payload.activo;
+});
+
+const startEditConcepto = (concepto) => {
+  editingId.concepto = concepto.id;
+  conceptoEditBuffer.descripcion = concepto.descripcion;
+  conceptoEditBuffer.precio_base = String(concepto.precio_base ?? '');
+  conceptoEditBuffer.unidad_id = String(concepto.unidad_id ?? '');
+  conceptoEditBuffer.tipo_presupuesto_id = String(concepto.tipo_presupuesto_id ?? '');
+};
+
+const saveConcepto = (id) => withFeedback(async () => {
+  await request(`/api/admin/conceptos/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      descripcion: conceptoEditBuffer.descripcion,
+      precio_base: Number(conceptoEditBuffer.precio_base),
+      unidad_id: Number(conceptoEditBuffer.unidad_id),
+      tipo_presupuesto_id: Number(conceptoEditBuffer.tipo_presupuesto_id),
+    }),
+  });
+
+  editingId.concepto = null;
   await loadPanelData();
 });
 
@@ -204,7 +277,7 @@ const saveAlbum = (id) => withFeedback(async () => {
 });
 
 const removeAlbum = (id) => withFeedback(async () => {
-  if (!confirm('¿Eliminar este album y sus fotos?')) return;
+  if (!confirm('¿Eliminar este álbum y sus fotos?')) return;
   await request(`/api/admin/albums/${id}`, { method: 'DELETE' });
   await loadPanelData();
 });
@@ -224,6 +297,25 @@ const toggleUsuario = (usuario) => withFeedback(async () => {
 const removeUsuario = (id) => withFeedback(async () => {
   if (!confirm('¿Eliminar este usuario?')) return;
   await request(`/api/admin/usuarios/${id}`, { method: 'DELETE' });
+  await loadPanelData();
+});
+
+const startEditUsuario = (usuario) => {
+  editingId.usuario = usuario.id;
+  usuarioEditBuffer.name = usuario.name;
+  usuarioEditBuffer.email = usuario.email;
+};
+
+const saveUsuario = (id) => withFeedback(async () => {
+  await request(`/api/admin/usuarios/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      name: usuarioEditBuffer.name,
+      email: usuarioEditBuffer.email,
+    }),
+  });
+
+  editingId.usuario = null;
   await loadPanelData();
 });
 
@@ -250,7 +342,7 @@ onMounted(loadPanelData);
       <section class="admin-content">
         <header class="panel-head">
           <h1>{{ sectionTitle }}</h1>
-          <p>Gestion de datos internos de ProReformasVLC</p>
+          <p>Gestión de datos internos de ProReformasVLC</p>
         </header>
 
         <p v-if="loading" class="status-box">Cargando datos...</p>
@@ -261,13 +353,28 @@ onMounted(loadPanelData);
           <h3>Nuevo tipo</h3>
           <form class="inline-form" @submit.prevent="addTipo">
             <input v-model="tipoForm.nombre" type="text" placeholder="Nombre" required />
-            <input v-model="tipoForm.descripcion" type="text" placeholder="Descripcion" />
+            <input v-model="tipoForm.descripcion" type="text" placeholder="Descripción" />
             <button type="submit">Agregar</button>
           </form>
           <ul class="item-list">
             <li v-for="tipo in tipos" :key="tipo.id">
-              <span><strong>{{ tipo.nombre }}</strong> — {{ tipo.descripcion || 'Sin descripcion' }}</span>
-              <button type="button" class="btn-danger" @click="removeTipo(tipo.id)">Eliminar</button>
+              <template v-if="editingId.tipo === tipo.id">
+                <div class="edit-row">
+                  <input v-model="tipoEditBuffer.nombre" type="text" placeholder="Nombre" required />
+                  <input v-model="tipoEditBuffer.descripcion" type="text" placeholder="Descripción" />
+                </div>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="saveTipo(tipo.id)">Guardar</button>
+                  <button type="button" class="btn-neutral" @click="editingId.tipo = null">Cancelar</button>
+                </div>
+              </template>
+              <template v-else>
+                <span><strong>{{ tipo.nombre }}</strong> — {{ tipo.descripcion || 'Sin descripción' }}</span>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="startEditTipo(tipo)">Editar</button>
+                  <button type="button" class="btn-danger" @click="removeTipo(tipo.id)">Eliminar</button>
+                </div>
+              </template>
             </li>
           </ul>
         </div>
@@ -282,8 +389,23 @@ onMounted(loadPanelData);
           </form>
           <ul class="item-list">
             <li v-for="unidad in unidades" :key="unidad.id">
-              <span><strong>{{ unidad.nombre }}</strong> ({{ unidad.abreviatura }})</span>
-              <button type="button" class="btn-danger" @click="removeUnidad(unidad.id)">Eliminar</button>
+              <template v-if="editingId.unidad === unidad.id">
+                <div class="edit-row">
+                  <input v-model="unidadEditBuffer.nombre" type="text" placeholder="Nombre" required />
+                  <input v-model="unidadEditBuffer.abreviatura" type="text" placeholder="Abreviatura" required />
+                </div>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="saveUnidad(unidad.id)">Guardar</button>
+                  <button type="button" class="btn-neutral" @click="editingId.unidad = null">Cancelar</button>
+                </div>
+              </template>
+              <template v-else>
+                <span><strong>{{ unidad.nombre }}</strong> ({{ unidad.abreviatura }})</span>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="startEditUnidad(unidad)">Editar</button>
+                  <button type="button" class="btn-danger" @click="removeUnidad(unidad.id)">Eliminar</button>
+                </div>
+              </template>
             </li>
           </ul>
         </div>
@@ -292,7 +414,7 @@ onMounted(loadPanelData);
         <div v-show="activeSection === 'conceptos'" class="panel-block">
           <h3>Nuevo concepto</h3>
           <form class="inline-form" @submit.prevent="addConcepto">
-            <input v-model="conceptoForm.descripcion" type="text" placeholder="Descripcion" required />
+            <input v-model="conceptoForm.descripcion" type="text" placeholder="Descripción" required />
             <input v-model="conceptoForm.precio_base" type="number" step="0.01" min="0" placeholder="Precio base" required />
             <select v-model="conceptoForm.unidad_id" required>
               <option value="">Unidad</option>
@@ -306,19 +428,52 @@ onMounted(loadPanelData);
           </form>
           <ul class="item-list">
             <li v-for="concepto in conceptos" :key="concepto.id">
-              <span>
-                <strong>{{ concepto.descripcion }}</strong>
-                — {{ concepto.precio_base.toFixed(2) }} EUR / {{ concepto.unidad_abrev }}
-                <em class="muted">({{ concepto.tipo_nombre }})</em>
-              </span>
-              <button type="button" class="btn-danger" @click="removeConcepto(concepto.id)">Eliminar</button>
+              <template v-if="editingId.concepto === concepto.id">
+                <div class="edit-row">
+                  <input v-model="conceptoEditBuffer.descripcion" type="text" placeholder="Descripción" required />
+                  <input v-model="conceptoEditBuffer.precio_base" type="number" step="0.01" min="0" placeholder="Precio base" required />
+                  <select v-model="conceptoEditBuffer.unidad_id" required>
+                    <option value="">Unidad</option>
+                    <option v-for="unidad in unidades" :key="unidad.id" :value="String(unidad.id)">{{ unidad.nombre }}</option>
+                  </select>
+                  <select v-model="conceptoEditBuffer.tipo_presupuesto_id" required>
+                    <option value="">Tipo</option>
+                    <option v-for="tipo in tipos" :key="tipo.id" :value="String(tipo.id)">{{ tipo.nombre }}</option>
+                  </select>
+                </div>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="saveConcepto(concepto.id)">Guardar</button>
+                  <button type="button" class="btn-neutral" @click="editingId.concepto = null">Cancelar</button>
+                </div>
+              </template>
+              <template v-else>
+                <span>
+                  <strong>{{ concepto.descripcion }}</strong>
+                  — {{ concepto.precio_base.toFixed(2) }} EUR / {{ concepto.unidad_abrev }}
+                  <em class="muted">({{ concepto.tipo_nombre }})</em>
+                  <span :class="['badge', concepto.activo ? 'badge-green' : 'badge-red']">
+                    {{ concepto.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </span>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="startEditConcepto(concepto)">Editar</button>
+                  <button
+                    type="button"
+                    :class="concepto.activo ? 'btn-neutral' : 'btn-primary'"
+                    @click="toggleConcepto(concepto)"
+                  >
+                    {{ concepto.activo ? 'Desactivar' : 'Activar' }}
+                  </button>
+                  <button type="button" class="btn-danger" @click="removeConcepto(concepto.id)">Eliminar</button>
+                </div>
+              </template>
             </li>
           </ul>
         </div>
 
         <!-- Presupuestos -->
         <div v-show="activeSection === 'presupuestos'" class="panel-block">
-          <h3>Nuevo presupuesto rapido</h3>
+          <h3>Nuevo presupuesto rápido</h3>
           <form class="inline-form" @submit.prevent="addPresupuesto">
             <input v-model="presupuestoForm.cliente" type="text" placeholder="Cliente" required />
             <input v-model="presupuestoForm.ciudad" type="text" placeholder="Ciudad" />
@@ -355,7 +510,7 @@ onMounted(loadPanelData);
           <h3>Nuevo servicio</h3>
           <form class="inline-form" @submit.prevent="addServicio">
             <input v-model="servicioForm.nombre" type="text" placeholder="Nombre" required />
-            <input v-model="servicioForm.descripcion" type="text" placeholder="Descripcion" />
+            <input v-model="servicioForm.descripcion" type="text" placeholder="Descripción" />
             <button type="submit">Agregar</button>
           </form>
           <ul class="item-list">
@@ -363,7 +518,7 @@ onMounted(loadPanelData);
               <template v-if="editingId.servicio === servicio.id">
                 <div class="edit-row">
                   <input v-model="editBuffer.nombre" type="text" placeholder="Nombre" required />
-                  <input v-model="editBuffer.descripcion" type="text" placeholder="Descripcion" />
+                  <input v-model="editBuffer.descripcion" type="text" placeholder="Descripción" />
                 </div>
                 <div class="action-group">
                   <button type="button" class="btn-primary" @click="saveServicio(servicio.id)">Guardar</button>
@@ -373,7 +528,7 @@ onMounted(loadPanelData);
               <template v-else>
                 <span>
                   <strong>{{ servicio.nombre }}</strong>
-                  <span class="muted">{{ servicio.descripcion || 'Sin descripcion' }}</span>
+                  <span class="muted">{{ servicio.descripcion || 'Sin descripción' }}</span>
                 </span>
                 <div class="action-group">
                   <button type="button" class="btn-primary" @click="startEditServicio(servicio)">Editar</button>
@@ -386,10 +541,10 @@ onMounted(loadPanelData);
 
         <!-- Albums -->
         <div v-show="activeSection === 'albumes'" class="panel-block">
-          <h3>Nuevo album</h3>
+          <h3>Nuevo álbum</h3>
           <form class="inline-form" @submit.prevent="addAlbum">
             <input v-model="albumForm.nombre" type="text" placeholder="Nombre" required />
-            <input v-model="albumForm.descripcion" type="text" placeholder="Descripcion" />
+            <input v-model="albumForm.descripcion" type="text" placeholder="Descripción" />
             <button type="submit">Agregar</button>
           </form>
           <ul class="item-list">
@@ -397,7 +552,7 @@ onMounted(loadPanelData);
               <template v-if="editingId.album === album.id">
                 <div class="edit-row">
                   <input v-model="editBuffer.nombre" type="text" placeholder="Nombre" required />
-                  <input v-model="editBuffer.descripcion" type="text" placeholder="Descripcion" />
+                  <input v-model="editBuffer.descripcion" type="text" placeholder="Descripción" />
                 </div>
                 <div class="action-group">
                   <button type="button" class="btn-primary" @click="saveAlbum(album.id)">Guardar</button>
@@ -407,7 +562,7 @@ onMounted(loadPanelData);
               <template v-else>
                 <span>
                   <strong>{{ album.nombre }}</strong>
-                  <span class="muted">{{ album.descripcion || 'Sin descripcion' }}</span>
+                  <span class="muted">{{ album.descripcion || 'Sin descripción' }}</span>
                 </span>
                 <div class="action-group">
                   <button type="button" class="btn-primary" @click="startEditAlbum(album)">Editar</button>
@@ -428,20 +583,33 @@ onMounted(loadPanelData);
           </form>
           <ul class="item-list">
             <li v-for="usuario in usuarios" :key="usuario.id">
-              <span>
-                <strong>{{ usuario.name }}</strong> — {{ usuario.email }}
-                <span :class="['badge', usuario.rol === 'admin' ? 'badge-green' : 'badge-gray']">{{ usuario.rol }}</span>
-                <span :class="['badge', usuario.activo ? 'badge-green' : 'badge-red']">{{ usuario.activo ? 'activo' : 'inactivo' }}</span>
-              </span>
-              <div class="action-group">
-                <button v-if="usuario.rol !== 'admin'" type="button" class="btn-neutral" @click="toggleUsuario(usuario)">
-                  {{ usuario.activo ? 'Desactivar' : 'Activar' }}
-                </button>
-                <button v-if="usuario.rol !== 'admin'" type="button" class="btn-danger" @click="removeUsuario(usuario.id)">
-                  Eliminar
-                </button>
-                <span v-if="usuario.rol === 'admin'" class="muted">Cuenta principal</span>
-              </div>
+              <template v-if="editingId.usuario === usuario.id">
+                <div class="edit-row">
+                  <input v-model="usuarioEditBuffer.name" type="text" placeholder="Nombre" required />
+                  <input v-model="usuarioEditBuffer.email" type="email" placeholder="Email" required />
+                </div>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="saveUsuario(usuario.id)">Guardar</button>
+                  <button type="button" class="btn-neutral" @click="editingId.usuario = null">Cancelar</button>
+                </div>
+              </template>
+              <template v-else>
+                <span>
+                  <strong>{{ usuario.name }}</strong> — {{ usuario.email }}
+                  <span :class="['badge', usuario.rol === 'admin' ? 'badge-green' : 'badge-gray']">{{ usuario.rol }}</span>
+                  <span :class="['badge', usuario.activo ? 'badge-green' : 'badge-red']">{{ usuario.activo ? 'activo' : 'inactivo' }}</span>
+                </span>
+                <div class="action-group">
+                  <button type="button" class="btn-primary" @click="startEditUsuario(usuario)">Editar</button>
+                  <button v-if="usuario.rol !== 'admin'" type="button" class="btn-neutral" @click="toggleUsuario(usuario)">
+                    {{ usuario.activo ? 'Desactivar' : 'Activar' }}
+                  </button>
+                  <button v-if="usuario.rol !== 'admin'" type="button" class="btn-danger" @click="removeUsuario(usuario.id)">
+                    Eliminar
+                  </button>
+                  <span v-if="usuario.rol === 'admin'" class="muted">Cuenta principal</span>
+                </div>
+              </template>
             </li>
           </ul>
         </div>
