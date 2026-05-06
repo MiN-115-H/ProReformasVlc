@@ -11,6 +11,7 @@ use App\Models\Unidad;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -34,6 +35,7 @@ class AdminPanelController extends Controller
                     'unidad_abrev' => $concepto->unidad?->abreviatura,
                     'tipo_nombre' => $concepto->tipoPresupuesto?->nombre,
                     'activo' => (bool) $concepto->activo,
+                    'created_at' => optional($concepto->created_at)->toIso8601String(),
                 ];
             })->values();
 
@@ -44,15 +46,22 @@ class AdminPanelController extends Controller
             ->map(function (Presupuesto $presupuesto) {
                 return [
                     'id' => $presupuesto->id,
+                    'titulo' => $presupuesto->titulo,
                     'cliente' => $presupuesto->cliente_nombre,
+                    'telefono' => $presupuesto->cliente_telefono,
+                    'email' => $presupuesto->cliente_email,
                     'ciudad' => $presupuesto->ciudad,
+                    'metros_cuadrados' => $presupuesto->metros_cuadrados,
+                    'fecha' => optional($presupuesto->fecha_presupuesto)->format('Y-m-d'),
+                    'created_at' => optional($presupuesto->created_at)->toIso8601String(),
+                    'tipo_presupuesto_id' => $presupuesto->tipo_presupuesto_id,
                     'tipo' => $presupuesto->tipoPresupuesto?->nombre,
                     'estado' => $presupuesto->estado,
                     'total' => (float) $presupuesto->total,
                 ];
             })->values();
 
-        $servicios = Servicio::orderBy('nombre')->get();
+        $servicios = Servicio::orderBy('nombre')->get()->map(fn (Servicio $servicio) => $this->mapServicio($servicio))->values();
         $albumes = Album::orderBy('nombre')->get();
         $usuarios = User::select('id', 'name', 'email', 'rol', 'activo')->orderBy('name')->get();
 
@@ -219,15 +228,19 @@ class AdminPanelController extends Controller
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string'],
+            'imagen' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120', 'dimensions:width=1200,height=800'],
         ]);
+
+        $imagePath = $request->file('imagen')->store('servicios', 'public');
 
         $servicio = Servicio::create($validated + [
             'precio_base' => null,
+            'imagen_portada' => $imagePath,
             'activo' => true,
             'fecha_creacion' => now(),
         ]);
 
-        return response()->json($servicio, 201);
+        return response()->json($this->mapServicio($servicio), 201);
     }
 
     public function storeAlbum(Request $request): JsonResponse
@@ -247,15 +260,28 @@ class AdminPanelController extends Controller
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string'],
+            'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120', 'dimensions:width=1200,height=800'],
         ]);
+
+        if ($request->hasFile('imagen')) {
+            if ($servicio->imagen_portada) {
+                Storage::disk('public')->delete($servicio->imagen_portada);
+            }
+
+            $validated['imagen_portada'] = $request->file('imagen')->store('servicios', 'public');
+        }
 
         $servicio->update($validated);
 
-        return response()->json($servicio);
+        return response()->json($this->mapServicio($servicio));
     }
 
     public function deleteServicio(Servicio $servicio): JsonResponse
     {
+        if ($servicio->imagen_portada) {
+            Storage::disk('public')->delete($servicio->imagen_portada);
+        }
+
         $servicio->delete();
         return response()->json(['message' => 'Servicio eliminado.']);
     }
@@ -328,6 +354,30 @@ class AdminPanelController extends Controller
         return response()->json(['estado' => $presupuesto->estado]);
     }
 
+    public function showPresupuesto(Presupuesto $presupuesto): JsonResponse
+    {
+        $presupuesto->load('tipoPresupuesto:id,nombre');
+
+        return response()->json([
+            'id' => $presupuesto->id,
+            'titulo' => $presupuesto->titulo,
+            'fecha' => optional($presupuesto->fecha_presupuesto)->format('Y-m-d'),
+            'cliente_nombre' => $presupuesto->cliente_nombre,
+            'cliente_telefono' => $presupuesto->cliente_telefono,
+            'cliente_email' => $presupuesto->cliente_email,
+            'direccion' => $presupuesto->direccion,
+            'ciudad' => $presupuesto->ciudad,
+            'observaciones' => $presupuesto->observaciones,
+            'tipo' => $presupuesto->tipoPresupuesto?->nombre,
+            'metros_cuadrados' => $presupuesto->metros_cuadrados,
+            'estado' => $presupuesto->estado,
+            'lineas' => $presupuesto->lineas ?? [],
+            'subtotal' => (float) $presupuesto->subtotal,
+            'iva' => (float) $presupuesto->iva,
+            'total' => (float) $presupuesto->total,
+        ]);
+    }
+
     public function storeUsuario(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -344,5 +394,19 @@ class AdminPanelController extends Controller
         ]);
 
         return response()->json($usuario, 201);
+    }
+
+    private function mapServicio(Servicio $servicio): array
+    {
+        return [
+            'id' => $servicio->id,
+            'nombre' => $servicio->nombre,
+            'descripcion' => $servicio->descripcion,
+            'imagen_portada' => $servicio->imagen_portada,
+            'imagen_url' => $servicio->imagen_portada ? Storage::disk('public')->url($servicio->imagen_portada) : null,
+            'activo' => (bool) $servicio->activo,
+            'fecha_creacion' => optional($servicio->fecha_creacion)->toIso8601String(),
+            'created_at' => optional($servicio->created_at)->toIso8601String(),
+        ];
     }
 }

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminPanelDemoSeeder::class,
             ConceptosCocinaYBanoSeeder::class,
+            ServiciosCatalogoSeeder::class,
         ]);
     }
 }

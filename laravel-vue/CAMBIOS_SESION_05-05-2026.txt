@@ -1,0 +1,185 @@
+========================================================
+  RESUMEN DE CAMBIOS - ProReformasVLC (rama v3)
+  Fecha: 05/05/2026
+========================================================
+
+CONTEXTO
+--------
+Proyecto: ProReformasVLC (Laravel 13 + Vue 3 / Vite)
+Repositorio: https://github.com/MiN-115-H/ProReformasVlc.git (rama v3)
+Entorno local: php -S 127.0.0.1:8000 -t public  +  npm run dev (Vite :5173)
+Base de datos: SQLite (laravel-vue/database/database.sqlite)
+Admin: admin@proreformasvlc.com / Admin12345!
+
+
+------------------------------------------------------------
+1. CONFIGURACIÓN INICIAL DEL ENTORNO LOCAL
+------------------------------------------------------------
+- Clonado el repositorio, rama v3.
+- Ejecutado `composer install` y `npm install` (se usó install en vez de ci
+  por desajuste en el lockfile).
+- Generada APP_KEY con `php artisan key:generate`.
+- Configurado .env:
+    APP_URL=http://127.0.0.1:8000
+    DB_CONNECTION=sqlite
+- Creado el fichero SQLite vacío y ejecutadas migraciones + seeders:
+    php artisan migrate --force
+    php artisan db:seed --force
+- Corregido el script dev en composer.json: sustituido `php artisan serve`
+  por `php -S 127.0.0.1:8000 -t public` (artisan serve falla en Windows).
+
+
+------------------------------------------------------------
+2. MEJORAS EN PresupuestosPage.vue
+------------------------------------------------------------
+a) Renombrado el botón principal a "Solicitar presupuesto".
+
+b) Formulario dividido en dos secciones colapsables:
+   - Sección 1 – Datos del cliente (nombre, teléfono, email, dirección, ciudad).
+     Al confirmar se bloquea y habilita la Sección 2.
+   - Sección 2 – Conceptos (bloqueada hasta confirmar la Sección 1).
+
+c) Validaciones de formulario (frontend):
+   - Nombre: solo letras y espacios, mínimo 2 chars.
+   - Teléfono: 9 dígitos.
+   - Email: formato válido.
+   - Dirección y ciudad: obligatorias.
+
+d) Campo "Título del presupuesto" obligatorio (ej. "Reforma de Baño de 150 m2")
+   con selección de categoría (tipo de presupuesto) obligatoria.
+
+e) Campo m2 (metros cuadrados) añadido al formulario; cantidad y m2 en la
+   misma fila.
+
+f) Al añadir un concepto, la categoría se mantiene seleccionada para agilizar
+   la introducción de varios conceptos del mismo tipo.
+
+g) Flujo de envío: modal de confirmación → POST /api/presupuestos → window.print()
+   (el presupuesto se guarda antes de imprimir).
+
+h) WhatsApp FAB oculto en la ruta /presupuestos y durante la impresión
+   (modificado App.vue).
+
+i) Validación backend reforzada en PresupuestoController.php:
+   - Campos nuevos: titulo (max 180), metros_cuadrados, tipo_presupuesto_id.
+   - Regex en nombre, teléfono y ciudad.
+   - Comprobación de coherencia de categoría entre líneas del presupuesto.
+
+
+------------------------------------------------------------
+3. NUEVA MIGRACIÓN
+------------------------------------------------------------
+Archivo: database/migrations/2026_05_05_000016_add_titulo_y_metros_to_presupuestos_table.php
+- Añade columnas `titulo` (string 180, nullable) y `metros_cuadrados`
+  (decimal 8,2, nullable) a la tabla `presupuestos`.
+- Columna añadida también al campo `fillable` y `casts` del modelo
+  app/Models/Presupuesto.php.
+
+
+------------------------------------------------------------
+4. SECCIÓN DE PRESUPUESTOS EN EL PANEL DE ADMINISTRACIÓN
+------------------------------------------------------------
+Archivo: resources/js/pages/AdminPanelPage.vue
+
+a) Nueva pestaña "Presupuestos" en el menú lateral del admin.
+
+b) Listado de presupuestos recibidos con:
+   - Título, cliente, teléfono, email, ciudad, m2, fecha, tipo, total.
+   - Badge de estado coloreado: pendiente / aceptado / rechazado.
+   - Botones "Aceptar", "Denegar" y "Pendiente" con PATCH a
+     /api/admin/presupuestos/{id}/estado.
+
+c) Botón "Ver albarán" por fila → abre modal con detalle completo:
+   - Cabecera con número de albarán y título.
+   - Datos del cliente.
+   - Resumen (tipo, estado, fecha, superficie).
+   - Tabla de conceptos (descripción, cantidad, precio, subtotal).
+   - Totales: subtotal, IVA, total.
+   - Botones "Imprimir" y "Cerrar".
+
+d) Modo impresión del albarán:
+   - @media print oculta todo el shell del admin y muestra solo el
+     contenido del modal en A4 (margin 12mm).
+   - Botones de acción marcados con .print-hidden (no aparecen al imprimir).
+
+
+------------------------------------------------------------
+5. CABECERA CORPORATIVA EN EL ALBARÁN (ÚLTIMO CAMBIO)
+------------------------------------------------------------
+Archivo: resources/js/pages/AdminPanelPage.vue
+
+Añadida sección .albaran-company-header al inicio del contenido del modal,
+visible tanto en pantalla como al imprimir:
+
+  ┌──────────────────────────────────────────────────────┐
+  │  [LOGO]  ProReformasVLC               ALBARÁN        │
+  │          C/ Torrente n18, 46014       #<id>          │
+  │          Valencia, España             <fecha>        │
+  │          Tel: +34 606 939 035                        │
+  │          julian.proreformasvlc@gmail.com             │
+  └──────────────────────────────────────────────────────┘
+
+- Logo cargado desde /img/logo.jpg mediante :src binding (evita
+  importación estática de Vite).
+- Estilos específicos de impresión añadidos dentro del @media print
+  existente para ajustar tamaños en A4.
+
+Rutas de API relacionadas (routes/api.php):
+  GET  /api/admin/panel-data                        → panelData()
+  GET  /api/admin/presupuestos/{presupuesto}        → showPresupuesto()
+  PATCH /api/admin/presupuestos/{presupuesto}/estado → updateEstadoPresupuesto()
+
+
+------------------------------------------------------------
+6. CONTROLADORES BACKEND MODIFICADOS
+------------------------------------------------------------
+app/Http/Controllers/PresupuestoController.php
+  - index(): GET /api/conceptos – devuelve tipos y conceptos.
+  - store(): POST /api/presupuestos – validación completa + guardado.
+
+app/Http/Controllers/AdminPanelController.php
+  - panelData(): incluye titulo, telefono, email, metros_cuadrados, fecha,
+    tipo, estado, total en la respuesta del listado.
+  - showPresupuesto($id): devuelve detalle completo para el albarán
+    (cliente + lineas + totales calculados).
+  - updateEstadoPresupuesto(): PATCH estado (pendiente/aceptado/rechazado).
+
+
+------------------------------------------------------------
+7. CATALOGO REAL DE SERVICIOS CARGADO EN BASE DE DATOS
+------------------------------------------------------------
+Archivo: database/seeders/ServiciosCatalogoSeeder.php
+
+- Creado seeder especifico para normalizar y poblar el catalogo publico de
+  servicios con 12 entradas activas:
+    Albañilería
+    Carpintería
+    Fontanería
+    Electricidad
+    Pintura
+    Gas y calefacción
+    Aire acondicionado
+    Cristalería
+    Persianas
+    Cerrajería
+    Acero inoxidable
+    Electrodomésticos
+
+- Cada servicio se actualiza o crea en la tabla `servicios` y se le asigna
+  una imagen local en `storage/app/public/servicios/*.svg`.
+
+- Como no había fotos reales en el workspace, se generaron portadas visuales
+  locales de 1200x800 para cada servicio, listas para mostrarse en las cards
+  del frontend y en el panel.
+
+- Ejecutado:
+    php artisan db:seed --class=ServiciosCatalogoSeeder --force
+    php artisan storage:link
+
+- Verificación SQLite completada: 12 servicios activos con ruta de imagen
+  persistida en base de datos.
+
+
+========================================================
+  FIN DEL RESUMEN
+========================================================

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Concepto;
 use App\Models\Presupuesto;
+use App\Models\Servicio;
 use App\Models\TipoPresupuesto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class PresupuestoController extends Controller
 {
@@ -28,11 +30,14 @@ class PresupuestoController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'cliente_nombre' => ['required', 'string', 'max:150'],
-            'cliente_telefono' => ['required', 'string', 'max:50'],
+            'titulo' => ['required', 'string', 'max:180'],
+            'metros_cuadrados' => ['required', 'numeric', 'gt:0'],
+            'tipo_presupuesto_id' => ['required', 'exists:tipos_presupuesto,id'],
+            'cliente_nombre' => ['required', 'string', 'min:3', 'max:150', 'regex:/^[\pL\s\-\']+$/u'],
+            'cliente_telefono' => ['required', 'string', 'max:50', 'regex:/^\+?[0-9\s\-]{8,20}$/'],
             'cliente_email' => ['required', 'email', 'max:150'],
-            'direccion' => ['nullable', 'string', 'max:255'],
-            'ciudad' => ['nullable', 'string', 'max:120'],
+            'direccion' => ['required', 'string', 'max:255'],
+            'ciudad' => ['required', 'string', 'max:120', 'regex:/^[\pL\s\-\']+$/u'],
             'observaciones' => ['nullable', 'string'],
             'fecha_presupuesto' => ['required', 'date'],
             'lineas' => ['required', 'array', 'min:1'],
@@ -40,10 +45,23 @@ class PresupuestoController extends Controller
             'lineas.*.cantidad' => ['required', 'numeric', 'gt:0'],
             'lineas.*.precio' => ['required', 'numeric', 'gte:0'],
             'lineas.*.subtotal' => ['required', 'numeric', 'gte:0'],
+            'lineas.*.categoria_id' => ['required', 'integer', 'exists:tipos_presupuesto,id'],
             'subtotal' => ['required', 'numeric', 'gte:0'],
             'iva' => ['required', 'numeric', 'gte:0'],
             'total' => ['required', 'numeric', 'gte:0'],
         ]);
+
+        $categoriasLineas = collect($validated['lineas'])
+            ->pluck('categoria_id')
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        if ($categoriasLineas->count() !== 1 || $categoriasLineas->first() !== (int) $validated['tipo_presupuesto_id']) {
+            throw ValidationException::withMessages([
+                'lineas' => ['Las líneas no pueden mezclar categorías distintas al tipo de presupuesto seleccionado.'],
+            ]);
+        }
 
         $presupuesto = Presupuesto::create($validated);
 
@@ -51,5 +69,26 @@ class PresupuestoController extends Controller
             'message' => 'Presupuesto guardado correctamente.',
             'id' => $presupuesto->id,
         ], 201);
+    }
+
+    public function servicios(): JsonResponse
+    {
+        $servicios = Servicio::query()
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get()
+            ->map(function (Servicio $servicio) {
+                return [
+                    'id' => $servicio->id,
+                    'titulo' => $servicio->nombre,
+                    'desc' => $servicio->descripcion,
+                    'img' => $servicio->imagen_portada ? Storage::disk('public')->url($servicio->imagen_portada) : null,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'servicios' => $servicios,
+        ]);
     }
 }

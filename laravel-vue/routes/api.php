@@ -5,6 +5,7 @@ use App\Http\Controllers\PresupuestoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/conceptos', [PresupuestoController::class, 'conceptos']);
+Route::get('/servicios', [PresupuestoController::class, 'servicios']);
 Route::post('/presupuestos', [PresupuestoController::class, 'store']);
 
 Route::middleware(['web', 'auth', 'admin.only'])->prefix('admin')->group(function () {
@@ -23,6 +24,7 @@ Route::middleware(['web', 'auth', 'admin.only'])->prefix('admin')->group(functio
 	Route::delete('/conceptos/{concepto}', [AdminPanelController::class, 'deleteConcepto']);
 
 	Route::post('/presupuestos', [AdminPanelController::class, 'storePresupuesto']);
+	Route::get('/presupuestos/{presupuesto}', [AdminPanelController::class, 'showPresupuesto']);
 	Route::patch('/presupuestos/{presupuesto}/estado', [AdminPanelController::class, 'updateEstadoPresupuesto']);
 
 	Route::post('/servicios', [AdminPanelController::class, 'storeServicio']);

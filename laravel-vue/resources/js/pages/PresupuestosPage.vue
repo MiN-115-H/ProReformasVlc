@@ -12,15 +12,24 @@ const clienteCiudad = ref('');
 const observaciones = ref('');
 
 const datosPersonalesConfirmados = ref(false);
+const seccionDatosExpandida = ref(true);
+const errorConfirmacionDatos = ref('');
+const errorConceptos = ref('');
+const errorVerPresupuesto = ref('');
+const mostrarModalConfirmacion = ref(false);
+const guardandoPresupuesto = ref(false);
 
 const categoriaSeleccionada = ref('');
+const categoriaBloqueadaId = ref('');
 const conceptoSeleccionadoId = ref('');
 const cantidad = ref(1);
+const metrosCuadrados = ref('');
 const extrasSeleccionados = ref([]);  // IDs de sugerencias marcadas
 const otrosDescripcion = ref('');     // Texto libre para OTRAS
 
 const lineas = ref([]);
 const logoUrl = '/img/logo.jpg';
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
 const tipos = ref([]);
 const conceptosTodos = ref([]);
@@ -38,6 +47,48 @@ onMounted(async () => {
 });
 
 const ticketFecha = new Date().toLocaleDateString('es-ES');
+
+const datosPersonalesCompletos = computed(() =>
+  [
+    clienteNombre.value,
+    clienteTelefono.value,
+    clienteEmail.value,
+    clienteDireccion.value,
+    clienteCiudad.value,
+  ].every((value) => value.trim().length > 0),
+);
+
+const telefonoValido = computed(() => /^\+?[0-9\s-]{8,20}$/.test(clienteTelefono.value.trim()));
+const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clienteEmail.value.trim()));
+const nombreValido = computed(() => /^[\p{L}\s\-']{3,150}$/u.test(clienteNombre.value.trim()));
+const ciudadValida = computed(() => /^[\p{L}\s\-']{2,120}$/u.test(clienteCiudad.value.trim()));
+const direccionValida = computed(() => clienteDireccion.value.trim().length >= 5);
+
+const datosValidadosParaConceptos = computed(() =>
+  datosPersonalesConfirmados.value
+  && datosPersonalesCompletos.value
+  && telefonoValido.value
+  && emailValido.value
+  && nombreValido.value
+  && ciudadValida.value
+  && direccionValida.value,
+);
+
+const nombreCategoriaPorId = (id) => {
+  const tipo = tipos.value.find((item) => String(item.id) === String(id));
+  if (!tipo) return 'Reforma';
+  return tipo.nombre === 'Bano' ? 'Baño' : tipo.nombre;
+};
+
+const tituloPresupuesto = computed(() => {
+  const categoriaId = categoriaBloqueadaId.value || categoriaSeleccionada.value;
+  const nombreCategoria = categoriaId ? nombreCategoriaPorId(categoriaId) : 'Reforma';
+  const m2 = Number(metrosCuadrados.value);
+  if (m2 > 0) {
+    return `Reforma de ${nombreCategoria} de ${m2} m2`;
+  }
+  return `Reforma de ${nombreCategoria}`;
+});
 
 const conceptosDisponibles = computed(() => {
   if (!categoriaSeleccionada.value) return [];
@@ -68,6 +119,10 @@ const estadoConfirmacionTexto = computed(() =>
 
 watch([clienteNombre, clienteTelefono, clienteEmail, clienteDireccion, clienteCiudad], () => {
   datosPersonalesConfirmados.value = false;
+  errorConfirmacionDatos.value = '';
+  if (!datosPersonalesCompletos.value) {
+    errorConceptos.value = 'Completa y confirma tus datos personales para habilitar la sección de conceptos.';
+  }
 });
 
 watch(categoriaSeleccionada, () => {
@@ -80,19 +135,74 @@ watch(conceptoSeleccionadoId, () => {
 });
 
 const confirmarDatos = () => {
-  if (!clienteNombre.value.trim() || !clienteTelefono.value.trim() || !clienteEmail.value.trim()) {
-    alert('Para confirmar, rellena al menos nombre, teléfono y correo electrónico.');
+  if (!datosPersonalesCompletos.value) {
+    errorConfirmacionDatos.value = 'Debes completar nombre, teléfono, email, dirección y ciudad.';
     return;
   }
 
+  if (!nombreValido.value) {
+    errorConfirmacionDatos.value = 'Introduce un nombre válido (solo letras y espacios).';
+    return;
+  }
+
+  if (!telefonoValido.value) {
+    errorConfirmacionDatos.value = 'Introduce un teléfono válido (8-20 dígitos, permite +, espacios y guiones).';
+    return;
+  }
+
+  if (!emailValido.value) {
+    errorConfirmacionDatos.value = 'Introduce un correo electrónico válido.';
+    return;
+  }
+
+  if (!direccionValida.value) {
+    errorConfirmacionDatos.value = 'La dirección debe tener al menos 5 caracteres.';
+    return;
+  }
+
+  if (!ciudadValida.value) {
+    errorConfirmacionDatos.value = 'Introduce una ciudad válida (solo letras y espacios).';
+    return;
+  }
+
+  errorConfirmacionDatos.value = '';
+  errorConceptos.value = '';
   datosPersonalesConfirmados.value = true;
+  seccionDatosExpandida.value = false;
 };
 
 const anadirConcepto = () => {
-  if (!categoriaSeleccionada.value || !conceptoSeleccionadoId.value) return;
+  errorConceptos.value = '';
+
+  if (!datosValidadosParaConceptos.value) {
+    errorConceptos.value = 'Primero completa y confirma tus datos personales.';
+    return;
+  }
+
+  if (!categoriaSeleccionada.value || !conceptoSeleccionadoId.value) {
+    errorConceptos.value = 'Selecciona categoría y trabajo específico.';
+    return;
+  }
 
   const concepto = conceptoSeleccionado.value;
-  if (!concepto || Number(cantidad.value) <= 0) return;
+  if (!concepto || Number(cantidad.value) <= 0) {
+    errorConceptos.value = 'Indica una cantidad válida para el trabajo.';
+    return;
+  }
+
+  const m2 = Number(metrosCuadrados.value);
+  if (!Number.isFinite(m2) || m2 <= 0) {
+    errorConceptos.value = 'Indica los metros cuadrados del habitáculo a reformar.';
+    return;
+  }
+
+  if (
+    categoriaBloqueadaId.value
+    && String(categoriaSeleccionada.value) !== String(categoriaBloqueadaId.value)
+  ) {
+    errorConceptos.value = `El presupuesto actual es de ${nombreCategoriaPorId(categoriaBloqueadaId.value)}. No puedes mezclar categorías.`;
+    return;
+  }
 
   // Concepto principal (o descripcion libre para OTRAS)
   const descripcionPrincipal = esOtras.value
@@ -107,12 +217,16 @@ const anadirConcepto = () => {
     cantidad: Number(cantidad.value),
     precio: precioBase,
     subtotal: Number(cantidad.value) * precioBase,
+    categoriaId: String(categoriaSeleccionada.value),
+    conceptoId: concepto.id,
+    metrosCuadrados: m2,
   });
 
   // Extras seleccionados (siempre cantidad 1)
   for (const extraId of extrasSeleccionados.value) {
     const extra = conceptosTodos.value.find((c) => c.id === extraId);
     if (!extra) continue;
+    if (String(extra.tipo_presupuesto_id) !== String(categoriaSeleccionada.value)) continue;
     const extraPrecio = Number(extra.precio_base);
     lineas.value.push({
       id: Date.now() + extraId,
@@ -120,10 +234,16 @@ const anadirConcepto = () => {
       cantidad: 1,
       precio: extraPrecio,
       subtotal: extraPrecio,
+      categoriaId: String(categoriaSeleccionada.value),
+      conceptoId: extra.id,
+      metrosCuadrados: m2,
     });
   }
 
-  categoriaSeleccionada.value = '';
+  if (!categoriaBloqueadaId.value) {
+    categoriaBloqueadaId.value = String(categoriaSeleccionada.value);
+  }
+
   conceptoSeleccionadoId.value = '';
   cantidad.value = 1;
   extrasSeleccionados.value = [];
@@ -132,18 +252,83 @@ const anadirConcepto = () => {
 
 const eliminarLinea = (id) => {
   lineas.value = lineas.value.filter((line) => line.id !== id);
+  if (lineas.value.length === 0) {
+    categoriaBloqueadaId.value = '';
+  }
 };
 
-const imprimirPresupuesto = () => {
-  if (!datosPersonalesConfirmados.value) {
-    alert('Debes rellenar y confirmar tus datos personales antes de imprimir el presupuesto.');
+const verPresupuesto = () => {
+  errorVerPresupuesto.value = '';
+  if (!datosValidadosParaConceptos.value) {
+    errorVerPresupuesto.value = 'Completa y confirma tus datos personales para continuar.';
     return;
   }
   if (lineas.value.length === 0) {
-    alert('Añade al menos un concepto antes de descargar el presupuesto.');
+    errorVerPresupuesto.value = 'Añade al menos un concepto para ver el presupuesto.';
     return;
   }
-  window.print();
+
+  mostrarModalConfirmacion.value = true;
+};
+
+const confirmarYGuardarPresupuesto = async () => {
+  if (guardandoPresupuesto.value) return;
+
+  errorVerPresupuesto.value = '';
+  guardandoPresupuesto.value = true;
+
+  const tipoPresupuestoId = Number(categoriaBloqueadaId.value || categoriaSeleccionada.value);
+
+  try {
+    const response = await fetch('/api/presupuestos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        titulo: tituloPresupuesto.value,
+        metros_cuadrados: Number(metrosCuadrados.value),
+        tipo_presupuesto_id: tipoPresupuestoId,
+        cliente_nombre: clienteNombre.value.trim(),
+        cliente_telefono: clienteTelefono.value.trim(),
+        cliente_email: clienteEmail.value.trim(),
+        direccion: clienteDireccion.value.trim(),
+        ciudad: clienteCiudad.value.trim(),
+        observaciones: observaciones.value.trim() || null,
+        fecha_presupuesto: new Date().toISOString().slice(0, 10),
+        lineas: lineas.value.map((linea) => ({
+          descripcion: linea.descripcion,
+          cantidad: linea.cantidad,
+          precio: linea.precio,
+          subtotal: linea.subtotal,
+          categoria_id: Number(linea.categoriaId),
+        })),
+        subtotal: Number(subtotal.value.toFixed(2)),
+        iva: Number(iva.value.toFixed(2)),
+        total: Number(total.value.toFixed(2)),
+      }),
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload?.message || 'No se pudo guardar el presupuesto.');
+    }
+
+    mostrarModalConfirmacion.value = false;
+    window.print();
+  } catch (error) {
+    errorVerPresupuesto.value = error.message || 'No se pudo guardar el presupuesto.';
+  } finally {
+    guardandoPresupuesto.value = false;
+  }
+};
+
+const cerrarModalConfirmacion = () => {
+  if (guardandoPresupuesto.value) return;
+  mostrarModalConfirmacion.value = false;
 };
 
 const formatEUR = (value) =>
@@ -172,8 +357,18 @@ const formatEUR = (value) =>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-              <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 text-primary">1. Datos del Cliente</h2>
-              <form class="space-y-4" @submit.prevent>
+              <div class="flex items-center justify-between gap-3 mb-6">
+                <h2 class="text-2xl font-bold uppercase tracking-widest text-primary">1. Datos del Cliente</h2>
+                <button
+                  type="button"
+                  class="text-sm font-semibold text-primary hover:underline"
+                  @click="seccionDatosExpandida = !seccionDatosExpandida"
+                >
+                  {{ seccionDatosExpandida ? 'Minimizar' : 'Editar datos' }}
+                </button>
+              </div>
+
+              <form v-show="seccionDatosExpandida" class="space-y-4" @submit.prevent>
                 <div>
                   <label class="block text-sm font-semibold mb-2" for="cliente_nombre">Nombre Completo</label>
                   <input
@@ -181,6 +376,8 @@ const formatEUR = (value) =>
                     v-model="clienteNombre"
                     type="text"
                     placeholder="Ej. Juan Perez"
+                    minlength="3"
+                    maxlength="150"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                     required
                   />
@@ -194,6 +391,7 @@ const formatEUR = (value) =>
                       v-model="clienteTelefono"
                       type="tel"
                       placeholder="+34 600..."
+                      pattern="^\+?[0-9\s-]{8,20}$"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                       required
                     />
@@ -219,7 +417,9 @@ const formatEUR = (value) =>
                       v-model="clienteDireccion"
                       type="text"
                       placeholder="Calle, numero, piso..."
+                      minlength="5"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                      required
                     />
                   </div>
                   <div>
@@ -229,7 +429,9 @@ const formatEUR = (value) =>
                       v-model="clienteCiudad"
                       type="text"
                       placeholder="Ej. Valencia"
+                      minlength="2"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                      required
                     />
                   </div>
                 </div>
@@ -260,11 +462,24 @@ const formatEUR = (value) =>
                     {{ estadoConfirmacionTexto }}
                   </span>
                 </div>
+
+                <p v-if="errorConfirmacionDatos" class="alerta-validacion">{{ errorConfirmacionDatos }}</p>
               </form>
+
+              <div v-if="!seccionDatosExpandida" class="resumen-datos text-sm text-gray-700">
+                <p><strong>Nombre:</strong> {{ clienteNombre || '-' }}</p>
+                <p><strong>Teléfono:</strong> {{ clienteTelefono || '-' }}</p>
+                <p><strong>Email:</strong> {{ clienteEmail || '-' }}</p>
+                <p><strong>Dirección:</strong> {{ clienteDireccion || '-' }}</p>
+                <p><strong>Ciudad:</strong> {{ clienteCiudad || '-' }}</p>
+              </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="bg-white rounded-lg shadow-lg p-8" :class="{ 'opacity-60': !datosValidadosParaConceptos }">
               <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 text-primary">2. Añadir Conceptos</h2>
+              <p v-if="!datosValidadosParaConceptos" class="alerta-bloqueo mb-4">
+                Esta sección está bloqueada. Completa y confirma primero tus datos personales.
+              </p>
               <form class="space-y-4" @submit.prevent="anadirConcepto">
                 <div>
                   <label class="block text-sm font-semibold mb-2" for="categoria">Categoría de Reforma</label>
@@ -272,6 +487,7 @@ const formatEUR = (value) =>
                     id="categoria"
                     v-model="categoriaSeleccionada"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                    :disabled="!datosValidadosParaConceptos"
                     required
                   >
                     <option value="" disabled>
@@ -289,7 +505,7 @@ const formatEUR = (value) =>
                     id="concepto"
                     v-model="conceptoSeleccionadoId"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                    :disabled="!categoriaSeleccionada"
+                    :disabled="!datosValidadosParaConceptos || !categoriaSeleccionada"
                     required
                   >
                     <option value="" disabled>
@@ -342,25 +558,45 @@ const formatEUR = (value) =>
                   </div>
                 </div>
 
-                <div>
-                  <label class="block text-sm font-semibold mb-2" for="cantidad">Cantidad</label>
-                  <input
-                    id="cantidad"
-                    v-model.number="cantidad"
-                    type="number"
-                    min="1"
-                    step="1"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                    required
-                  />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-semibold mb-2" for="cantidad">Cantidad</label>
+                    <input
+                      id="cantidad"
+                      v-model.number="cantidad"
+                      type="number"
+                      min="1"
+                      step="1"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-semibold mb-2" for="metros_cuadrados">Tamaño del habitáculo (m2)</label>
+                    <input
+                      id="metros_cuadrados"
+                      v-model.number="metrosCuadrados"
+                      type="number"
+                      min="1"
+                      step="0.1"
+                      placeholder="Ej. 150"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                      :disabled="!datosValidadosParaConceptos"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <button
                   type="submit"
+                  :disabled="!datosValidadosParaConceptos"
                   class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold uppercase transition-all"
                 >
                   + Añadir al Presupuesto
                 </button>
+
+                <p v-if="errorConceptos" class="alerta-validacion">{{ errorConceptos }}</p>
               </form>
             </div>
           </div>
@@ -368,6 +604,7 @@ const formatEUR = (value) =>
           <div>
             <div class="bg-white rounded-lg shadow-lg p-8 sticky top-20">
               <h3 class="text-2xl font-bold uppercase tracking-widest mb-2 text-primary">Presupuesto Estimado</h3>
+              <p class="text-sm font-semibold text-gray-700 mb-1">{{ tituloPresupuesto }}</p>
               <span class="text-xs text-gray-500">{{ ticketFecha }}</span>
 
               <div class="space-y-3 my-6">
@@ -421,14 +658,32 @@ const formatEUR = (value) =>
               <button
                 type="button"
                 class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold uppercase transition-all"
-                @click="imprimirPresupuesto"
+                @click="verPresupuesto"
               >
-                Descargar/Imprimir presupuesto
+                Ver presupuesto
               </button>
+
+              <p v-if="errorVerPresupuesto" class="alerta-validacion mt-3">{{ errorVerPresupuesto }}</p>
             </div>
           </div>
         </div>
       </main>
+    </div>
+
+    <div v-if="mostrarModalConfirmacion" class="modal-overlay no-print" @click.self="cerrarModalConfirmacion">
+      <div class="modal-card">
+        <h4>Confirmar envío de presupuesto</h4>
+        <p>
+          Se guardará el presupuesto de <strong>{{ tituloPresupuesto }}</strong> para
+          <strong>{{ clienteNombre }}</strong> en la base de datos.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-secondary" @click="cerrarModalConfirmacion">Cancelar</button>
+          <button type="button" class="btn-modal-primary" :disabled="guardandoPresupuesto" @click="confirmarYGuardarPresupuesto">
+            {{ guardandoPresupuesto ? 'Guardando...' : 'Confirmar y ver presupuesto' }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <section class="print-only print-sheet">
@@ -444,6 +699,10 @@ const formatEUR = (value) =>
           <p>Fecha: {{ ticketFecha }}</p>
         </div>
       </header>
+
+      <section class="print-block">
+        <h4>{{ tituloPresupuesto }}</h4>
+      </section>
 
       <section class="print-block">
         <h4>Datos del cliente</h4>
@@ -527,6 +786,94 @@ const formatEUR = (value) =>
   margin: 0;
   color: #5f461f;
   line-height: 1.55;
+}
+
+.alerta-validacion {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.alerta-bloqueo {
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.resumen-datos {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(17, 24, 39, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-card {
+  width: min(560px, 100%);
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.2rem;
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.25);
+}
+
+.modal-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.modal-card p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.btn-modal-secondary,
+.btn-modal-primary {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-modal-secondary {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.btn-modal-primary {
+  background: #0f766e;
+  color: #fff;
+}
+
+.btn-modal-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .print-only {

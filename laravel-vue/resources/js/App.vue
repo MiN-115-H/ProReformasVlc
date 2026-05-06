@@ -6,6 +6,7 @@ import SiteFooter from './components/SiteFooter.vue';
 
 const route = useRoute();
 const useMinimalLayout = computed(() => route.meta.minimalLayout === true);
+const showWhatsappFab = computed(() => !useMinimalLayout.value && route.name !== 'presupuestos');
 </script>
 
 <template>
@@ -18,7 +19,7 @@ const useMinimalLayout = computed(() => route.meta.minimalLayout === true);
 
     <!-- Botón flotante WhatsApp -->
     <a
-      v-if="!useMinimalLayout"
+      v-if="showWhatsappFab"
       href="https://web.whatsapp.com/"
       target="_blank"
       rel="noopener noreferrer"
@@ -58,5 +59,11 @@ const useMinimalLayout = computed(() => route.meta.minimalLayout === true);
 .whatsapp-fab svg {
   width: 2rem;
   height: 2rem;
+}
+
+@media print {
+  .whatsapp-fab {
+    display: none !important;
+  }
 }
 </style>

@@ -11,6 +11,8 @@ class Presupuesto extends Model
     use HasFactory;
 
     protected $fillable = [
+        'titulo',
+        'metros_cuadrados',
         'cliente_nombre',
         'cliente_telefono',
         'cliente_email',
@@ -29,6 +31,7 @@ class Presupuesto extends Model
     protected $casts = [
         'fecha_presupuesto' => 'date',
         'lineas' => 'array',
+        'metros_cuadrados' => 'float',
     ];
 
     public function tipoPresupuesto()
