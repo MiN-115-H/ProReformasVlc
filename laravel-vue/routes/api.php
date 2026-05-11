@@ -8,6 +8,7 @@ Route::get('/conceptos', [PresupuestoController::class, 'conceptos']);
 Route::get('/servicios', [PresupuestoController::class, 'servicios']);
 Route::post('/presupuestos', [PresupuestoController::class, 'store']);
 Route::post('/contactos', [PresupuestoController::class, 'storeContacto'])->middleware('throttle:5,1');
+Route::get('/albums', [\App\Http\Controllers\PublicController::class, 'albums']);
 
 Route::middleware(['web', 'auth', 'admin.only'])->prefix('admin')->group(function () {
 	Route::get('/panel-data', [AdminPanelController::class, 'panelData']);
@@ -38,6 +39,8 @@ Route::middleware(['web', 'auth', 'admin.only'])->prefix('admin')->group(functio
 	Route::post('/albums', [AdminPanelController::class, 'storeAlbum']);
 	Route::patch('/albums/{album}', [AdminPanelController::class, 'updateAlbum']);
 	Route::delete('/albums/{album}', [AdminPanelController::class, 'deleteAlbum']);
+	Route::post('/albums/{album}/fotos', [AdminPanelController::class, 'storeFoto']);
+	Route::delete('/fotos/{foto}', [AdminPanelController::class, 'deleteFoto']);
 
 	Route::post('/usuarios', [AdminPanelController::class, 'storeUsuario']);
 	Route::patch('/usuarios/{usuario}', [AdminPanelController::class, 'updateUsuario']);

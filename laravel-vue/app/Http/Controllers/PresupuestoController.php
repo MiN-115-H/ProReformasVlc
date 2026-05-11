@@ -84,7 +84,7 @@ class PresupuestoController extends Controller
                     'id' => $servicio->id,
                     'titulo' => $servicio->nombre,
                     'desc' => $servicio->descripcion,
-                    'img' => $servicio->imagen_portada ? Storage::disk('public')->url($servicio->imagen_portada) : null,
+                    'img' => $servicio->imagen_portada ? (str_starts_with($servicio->imagen_portada, 'http') ? $servicio->imagen_portada : Storage::disk('public')->url($servicio->imagen_portada)) : null,
                 ];
             })
             ->values();

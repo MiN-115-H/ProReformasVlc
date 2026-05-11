@@ -8,7 +8,7 @@ const menu = [
   { id: 'presupuestos', label: 'Presupuestos' },
   { id: 'contactos', label: 'Contactos' },
   { id: 'servicios', label: 'Servicios' },
-  { id: 'albumes', label: 'Álbumes' },
+  { id: 'albumes', label: 'Proyectos' },
   { id: 'usuarios', label: 'Usuarios' },
 ];
 
@@ -60,7 +60,7 @@ const tipoForm = reactive({ nombre: '', descripcion: '' });
 const unidadForm = reactive({ nombre: '', abreviatura: '' });
 const conceptoForm = reactive({ descripcion: '', precio_base: '', unidad_id: '', tipo_presupuesto_id: '' });
 const servicioForm = reactive({ nombre: '', descripcion: '', imagen: null });
-const albumForm = reactive({ nombre: '', descripcion: '' });
+const albumForm = reactive({ nombre: '', descripcion: '', categoria: '' });
 const usuarioForm = reactive({ name: '', email: '' });
 
 const sectionTitle = computed(() => menu.find((item) => item.id === activeSection.value)?.label ?? 'Panel');
@@ -509,20 +509,39 @@ const addAlbum = () => withFeedback(async () => {
   await request('/api/admin/albums', { method: 'POST', body: JSON.stringify(albumForm) });
   albumForm.nombre = '';
   albumForm.descripcion = '';
+  albumForm.categoria = '';
   await loadPanelData();
 });
 
-const startEditAlbum = (a) => { editingId.album = a.id; editBuffer.nombre = a.nombre; editBuffer.descripcion = a.descripcion || ''; };
+const startEditAlbum = (a) => { editingId.album = a.id; editBuffer.nombre = a.nombre; editBuffer.descripcion = a.descripcion || ''; editBuffer.categoria = a.categoria || ''; };
 
 const saveAlbum = (id) => withFeedback(async () => {
-  await request(`/api/admin/albums/${id}`, { method: 'PATCH', body: JSON.stringify({ nombre: editBuffer.nombre, descripcion: editBuffer.descripcion }) });
+  await request(`/api/admin/albums/${id}`, { method: 'PATCH', body: JSON.stringify({ nombre: editBuffer.nombre, descripcion: editBuffer.descripcion, categoria: editBuffer.categoria }) });
   editingId.album = null;
   await loadPanelData();
 });
 
 const removeAlbum = (id) => withFeedback(async () => {
-  if (!confirm('¿Eliminar este álbum y sus fotos?')) return;
+  if (!confirm('¿Eliminar este proyecto y sus fotos?')) return;
   await request(`/api/admin/albums/${id}`, { method: 'DELETE' });
+  await loadPanelData();
+});
+
+const uploadFoto = (albumId, event) => withFeedback(async () => {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const formData = new FormData();
+  formData.append('imagen', file);
+  
+  await request(`/api/admin/albums/${albumId}/fotos`, { method: 'POST', body: formData });
+  event.target.value = ''; // reset input
+  await loadPanelData();
+});
+
+const removeFoto = (fotoId) => withFeedback(async () => {
+  if (!confirm('¿Eliminar esta foto?')) return;
+  await request(`/api/admin/fotos/${fotoId}`, { method: 'DELETE' });
   await loadPanelData();
 });
 
@@ -925,44 +944,76 @@ onMounted(loadPanelData);
           </ul>
         </div>
 
-        <!-- Albums -->
+        <!-- Proyectos (Álbumes en la base de datos) -->
         <div v-show="activeSection === 'albumes'" class="panel-block">
           <div class="section-header">
-            <h3>Álbumes de proyectos</h3>
+            <h3>Proyectos realizados</h3>
             <button type="button" class="btn-primary" @click="mostrarFormAlbum = !mostrarFormAlbum">
-              {{ mostrarFormAlbum ? 'Cancelar' : '+ Agregar álbum' }}
+              {{ mostrarFormAlbum ? 'Cancelar' : '+ Agregar proyecto' }}
             </button>
           </div>
           <div v-show="mostrarFormAlbum" class="concepto-form-card">
-            <h4>Nuevo álbum</h4>
+            <h4>Nuevo proyecto</h4>
             <form class="inline-form" @submit.prevent="addAlbum">
-              <input v-model="albumForm.nombre" type="text" placeholder="Nombre" required />
+              <input v-model="albumForm.nombre" type="text" placeholder="Nombre del proyecto" required />
               <input v-model="albumForm.descripcion" type="text" placeholder="Descripción" />
-              <button type="submit" class="btn-primary">Guardar álbum</button>
+              <select v-model="albumForm.categoria">
+                <option value="">Categoría</option>
+                <option value="Cocinas">Cocinas</option>
+                <option value="Baños">Baños</option>
+                <option value="Reformas Integrales">Reformas Integrales</option>
+              </select>
+              <button type="submit" class="btn-primary">Guardar proyecto</button>
             </form>
           </div>
           <ul class="item-list">
-            <li v-for="album in albumes" :key="album.id">
-              <template v-if="editingId.album === album.id">
-                <div class="edit-row">
-                  <input v-model="editBuffer.nombre" type="text" placeholder="Nombre" required />
-                  <input v-model="editBuffer.descripcion" type="text" placeholder="Descripción" />
+            <li v-for="album in albumes" :key="album.id" style="flex-direction: column; align-items: stretch;">
+              <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <template v-if="editingId.album === album.id">
+                  <div class="edit-row">
+                    <input v-model="editBuffer.nombre" type="text" placeholder="Nombre" required />
+                    <input v-model="editBuffer.descripcion" type="text" placeholder="Descripción" />
+                    <select v-model="editBuffer.categoria">
+                      <option value="">Categoría</option>
+                      <option value="Cocinas">Cocinas</option>
+                      <option value="Baños">Baños</option>
+                      <option value="Reformas Integrales">Reformas Integrales</option>
+                    </select>
+                  </div>
+                  <div class="action-group">
+                    <button type="button" class="btn-primary" @click="saveAlbum(album.id)">Guardar</button>
+                    <button type="button" class="btn-neutral" @click="editingId.album = null">Cancelar</button>
+                  </div>
+                </template>
+                <template v-else>
+                  <span>
+                    <strong>{{ album.nombre }}</strong>
+                    <span class="muted">{{ album.descripcion || 'Sin descripción' }}</span>
+                    <span class="badge badge-gray" v-if="album.categoria">{{ album.categoria }}</span>
+                  </span>
+                  <div class="action-group">
+                    <button type="button" class="btn-primary" @click="startEditAlbum(album)">Editar</button>
+                    <button type="button" class="btn-danger" @click="removeAlbum(album.id)">Eliminar</button>
+                  </div>
+                </template>
+              </div>
+              
+              <div class="album-fotos-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #ced9e5;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <h5 style="margin: 0; color: #1d3557; font-size: 0.9rem;">Fotos del proyecto ({{ album.fotos.length }})</h5>
+                  <label class="btn-neutral" style="cursor: pointer; display: inline-block; font-size: 0.8rem; padding: 0.3rem 0.6rem;">
+                    + Subir foto
+                    <input type="file" style="display: none;" accept="image/png,image/jpeg,image/webp" @change="uploadFoto(album.id, $event)">
+                  </label>
                 </div>
-                <div class="action-group">
-                  <button type="button" class="btn-primary" @click="saveAlbum(album.id)">Guardar</button>
-                  <button type="button" class="btn-neutral" @click="editingId.album = null">Cancelar</button>
+                <div class="fotos-grid" style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem;">
+                  <div v-for="foto in album.fotos" :key="foto.id" class="foto-card" style="position: relative; width: 100px; height: 100px; flex-shrink: 0;">
+                    <img :src="foto.url" :alt="foto.descripcion || 'Foto'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #ced9e5;">
+                    <button @click="removeFoto(foto.id)" type="button" style="position: absolute; top: -5px; right: -5px; background: #e63946; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">&times;</button>
+                  </div>
+                  <div v-if="album.fotos.length === 0" style="color: #7a92a8; font-size: 0.85rem; font-style: italic;">No hay fotos en este proyecto.</div>
                 </div>
-              </template>
-              <template v-else>
-                <span>
-                  <strong>{{ album.nombre }}</strong>
-                  <span class="muted">{{ album.descripcion || 'Sin descripción' }}</span>
-                </span>
-                <div class="action-group">
-                  <button type="button" class="btn-primary" @click="startEditAlbum(album)">Editar</button>
-                  <button type="button" class="btn-danger" @click="removeAlbum(album.id)">Eliminar</button>
-                </div>
-              </template>
+              </div>
             </li>
           </ul>
         </div>

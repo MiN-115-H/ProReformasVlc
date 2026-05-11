@@ -10,6 +10,7 @@ use App\Models\Servicio;
 use App\Models\TipoPresupuesto;
 use App\Models\Unidad;
 use App\Models\User;
+use App\Models\Foto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -82,7 +83,22 @@ class AdminPanelController extends Controller
             })->values();
 
         $servicios = Servicio::orderBy('nombre')->get()->map(fn (Servicio $servicio) => $this->mapServicio($servicio))->values();
-        $albumes = Album::orderBy('nombre')->get();
+        $albumes = Album::with('fotos')->orderBy('nombre')->get()->map(function($album) {
+            return [
+                'id' => $album->id,
+                'nombre' => $album->nombre,
+                'descripcion' => $album->descripcion,
+                'categoria' => $album->categoria,
+                'fotos' => $album->fotos->map(function($foto) {
+                    return [
+                        'id' => $foto->id,
+                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : Storage::disk('public')->url($foto->url),
+                        'descripcion' => $foto->descripcion,
+                        'orden' => $foto->orden,
+                    ];
+                })
+            ];
+        })->values();
         $usuarios = User::select('id', 'name', 'email', 'rol', 'activo')->orderBy('name')->get();
 
         return response()->json([
@@ -269,11 +285,19 @@ class AdminPanelController extends Controller
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string'],
+            'categoria' => ['nullable', 'string', 'max:50'],
         ]);
 
         $album = Album::create($validated + ['fecha_creacion' => now()]);
+        $album->load('fotos');
 
-        return response()->json($album, 201);
+        return response()->json([
+            'id' => $album->id,
+            'nombre' => $album->nombre,
+            'descripcion' => $album->descripcion,
+            'categoria' => $album->categoria,
+            'fotos' => [],
+        ], 201);
     }
 
     public function updateServicio(Request $request, Servicio $servicio): JsonResponse
@@ -312,17 +336,70 @@ class AdminPanelController extends Controller
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string'],
+            'categoria' => ['nullable', 'string', 'max:50'],
         ]);
 
         $album->update($validated);
+        $album->load('fotos');
 
-        return response()->json($album);
+        return response()->json([
+            'id' => $album->id,
+            'nombre' => $album->nombre,
+            'descripcion' => $album->descripcion,
+            'categoria' => $album->categoria,
+            'fotos' => $album->fotos->map(function($foto) {
+                return [
+                    'id' => $foto->id,
+                    'url' => str_starts_with($foto->url, 'http') ? $foto->url : Storage::disk('public')->url($foto->url),
+                    'descripcion' => $foto->descripcion,
+                    'orden' => $foto->orden,
+                ];
+            })
+        ]);
     }
 
     public function deleteAlbum(Album $album): JsonResponse
     {
+        foreach($album->fotos as $foto) {
+            if (!str_starts_with($foto->url, 'http')) {
+                Storage::disk('public')->delete($foto->url);
+            }
+            $foto->delete();
+        }
         $album->delete();
         return response()->json(['message' => 'Album eliminado.']);
+    }
+
+    public function storeFoto(Request $request, Album $album): JsonResponse
+    {
+        $request->validate([
+            'imagen' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $path = $request->file('imagen')->store('albums', 'public');
+        $orden = $album->fotos()->max('orden') + 1;
+
+        $foto = $album->fotos()->create([
+            'url' => $path,
+            'orden' => $orden,
+            'fecha_subida' => now()
+        ]);
+
+        return response()->json([
+            'id' => $foto->id,
+            'url' => Storage::disk('public')->url($path),
+            'descripcion' => $foto->descripcion,
+            'orden' => $foto->orden,
+        ], 201);
+    }
+
+    public function deleteFoto(Foto $foto): JsonResponse
+    {
+        if (!str_starts_with($foto->url, 'http')) {
+            Storage::disk('public')->delete($foto->url);
+        }
+        $foto->delete();
+        return response()->json(['message' => 'Foto eliminada.']);
     }
 
     public function toggleUsuario(User $usuario): JsonResponse
