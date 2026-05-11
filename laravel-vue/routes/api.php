@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/conceptos', [PresupuestoController::class, 'conceptos']);
 Route::get('/servicios', [PresupuestoController::class, 'servicios']);
 Route::post('/presupuestos', [PresupuestoController::class, 'store']);
+Route::post('/contactos', [PresupuestoController::class, 'storeContacto'])->middleware('throttle:5,1');
 
 Route::middleware(['web', 'auth', 'admin.only'])->prefix('admin')->group(function () {
 	Route::get('/panel-data', [AdminPanelController::class, 'panelData']);
@@ -26,6 +27,9 @@ Route::middleware(['web', 'auth', 'admin.only'])->prefix('admin')->group(functio
 	Route::post('/presupuestos', [AdminPanelController::class, 'storePresupuesto']);
 	Route::get('/presupuestos/{presupuesto}', [AdminPanelController::class, 'showPresupuesto']);
 	Route::patch('/presupuestos/{presupuesto}/estado', [AdminPanelController::class, 'updateEstadoPresupuesto']);
+
+	Route::patch('/contactos/{contacto}/estado', [AdminPanelController::class, 'updateEstadoContacto']);
+	Route::delete('/contactos/{contacto}', [AdminPanelController::class, 'deleteContacto']);
 
 	Route::post('/servicios', [AdminPanelController::class, 'storeServicio']);
 	Route::patch('/servicios/{servicio}', [AdminPanelController::class, 'updateServicio']);

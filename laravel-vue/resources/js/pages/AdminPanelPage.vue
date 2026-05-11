@@ -6,6 +6,7 @@ const menu = [
   { id: 'unidades', label: 'Unidades de medida' },
   { id: 'conceptos', label: 'Conceptos' },
   { id: 'presupuestos', label: 'Presupuestos' },
+  { id: 'contactos', label: 'Contactos' },
   { id: 'servicios', label: 'Servicios' },
   { id: 'albumes', label: 'Álbumes' },
   { id: 'usuarios', label: 'Usuarios' },
@@ -22,6 +23,7 @@ const tipos = ref([]);
 const unidades = ref([]);
 const conceptos = ref([]);
 const presupuestos = ref([]);
+const contactos = ref([]);
 const servicios = ref([]);
 const albumes = ref([]);
 const usuarios = ref([]);
@@ -38,6 +40,10 @@ const mostrarFormUsuario = ref(false);
 const conceptoOrden = ref('precio_asc');
 const presupuestoFiltroTipo = ref('');
 const presupuestoOrden = ref('fecha_desc');
+const presupuestoBusqueda = ref('');
+const contactoFiltroEstado = ref('');
+const contactoOrden = ref('fecha_desc');
+const contactoBusqueda = ref('');
 const servicioCreatePreviewUrl = ref('');
 const servicioEditPreviewUrl = ref('');
 
@@ -79,9 +85,28 @@ const conceptosFiltrados = computed(() => {
 });
 
 const presupuestosFiltrados = computed(() => {
+  const query = presupuestoBusqueda.value.trim().toLowerCase();
   const filtered = presupuestos.value.filter((presupuesto) => {
-    if (!presupuestoFiltroTipo.value) return true;
-    return String(presupuesto.tipo_presupuesto_id) === String(presupuestoFiltroTipo.value);
+    const coincideTipo = !presupuestoFiltroTipo.value
+      || String(presupuesto.tipo_presupuesto_id) === String(presupuestoFiltroTipo.value);
+
+    if (!coincideTipo) return false;
+    if (!query) return true;
+
+    const haystack = [
+      presupuesto.id,
+      presupuesto.titulo,
+      presupuesto.cliente,
+      presupuesto.telefono,
+      presupuesto.email,
+      presupuesto.ciudad,
+      presupuesto.tipo,
+      presupuesto.estado,
+    ]
+      .map((value) => String(value ?? '').toLowerCase())
+      .join(' ');
+
+    return haystack.includes(query);
   });
 
   return [...filtered].sort((first, second) => {
@@ -92,10 +117,55 @@ const presupuestosFiltrados = computed(() => {
   });
 });
 
+const contactosFiltrados = computed(() => {
+  const query = contactoBusqueda.value.trim().toLowerCase();
+
+  const filtered = contactos.value.filter((contacto) => {
+    if (contactoFiltroEstado.value === 'nuevos' && (contacto.leido || contacto.respondido)) return false;
+    if (contactoFiltroEstado.value === 'leidos' && !contacto.leido) return false;
+    if (contactoFiltroEstado.value === 'respondidos' && !contacto.respondido) return false;
+    if (contactoFiltroEstado.value === 'pendientes' && contacto.respondido) return false;
+
+    if (!query) return true;
+
+    const haystack = [
+      contacto.id,
+      contacto.nombre,
+      contacto.email,
+      contacto.telefono,
+      contacto.asunto,
+      contacto.mensaje,
+    ]
+      .map((value) => String(value ?? '').toLowerCase())
+      .join(' ');
+
+    return haystack.includes(query);
+  });
+
+  return [...filtered].sort((first, second) => {
+    const firstDate = getDateValue(first.fecha_recepcion || first.created_at);
+    const secondDate = getDateValue(second.fecha_recepcion || second.created_at);
+    if (contactoOrden.value === 'fecha_asc') return firstDate - secondDate;
+    return secondDate - firstDate;
+  });
+});
+
 const estadoColor = (estado) => {
   if (estado === 'aceptado') return 'badge-green';
   if (estado === 'rechazado') return 'badge-red';
   return 'badge-gray';
+};
+
+const estadoContacto = (contacto) => {
+  if (contacto.respondido) return 'respondido';
+  if (contacto.leido) return 'leido';
+  return 'nuevo';
+};
+
+const estadoContactoColor = (contacto) => {
+  if (contacto.respondido) return 'badge-green';
+  if (contacto.leido) return 'badge-gray';
+  return 'badge-red';
 };
 
 const formatEUR = (value) => `${Number(value || 0).toFixed(2)} EUR`;
@@ -152,6 +222,7 @@ const loadPanelData = async () => {
     unidades.value = data.unidades ?? [];
     conceptos.value = data.conceptos ?? [];
     presupuestos.value = data.presupuestos ?? [];
+    contactos.value = data.contactos ?? [];
     servicios.value = data.servicios ?? [];
     albumes.value = data.albumes ?? [];
     usuarios.value = data.usuarios ?? [];
@@ -297,6 +368,45 @@ const verAlbaran = (id) => withFeedback(async () => {
     albaranLoading.value = false;
   }
 });
+
+const actualizarEstadoContacto = (contacto, changes) => withFeedback(async () => {
+  const payload = await request(`/api/admin/contactos/${contacto.id}/estado`, {
+    method: 'PATCH',
+    body: JSON.stringify(changes),
+  });
+
+  contacto.leido = payload.leido;
+  contacto.respondido = payload.respondido;
+});
+
+const removeContacto = (id) => withFeedback(async () => {
+  if (!confirm('¿Eliminar este formulario de contacto?')) return;
+  await request(`/api/admin/contactos/${id}`, { method: 'DELETE' });
+  contactos.value = contactos.value.filter((contacto) => contacto.id !== id);
+});
+
+const responderContacto = (contacto) => {
+  const email = String(contacto.email ?? '').trim();
+
+  if (!email) {
+    errorMessage.value = 'Este contacto no tiene un email válido para responder.';
+    return;
+  }
+
+  const subject = contacto.asunto
+    ? `Re: ${contacto.asunto}`
+    : 'Respuesta a tu solicitud de contacto';
+
+  const body = [
+    `Hola ${contacto.nombre || ''},`,
+    '',
+    'Gracias por contactar con ProReformasVLC.',
+    '',
+  ].join('\n');
+
+  const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailtoUrl;
+};
 
 const cerrarAlbaran = () => {
   albaranModalOpen.value = false;
@@ -646,6 +756,12 @@ onMounted(loadPanelData);
           <div class="section-header">
             <h3>Solicitudes recibidas</h3>
             <div class="header-filters">
+              <input
+                v-model="presupuestoBusqueda"
+                type="search"
+                placeholder="Buscar por cliente, email, teléfono, título, ID..."
+                aria-label="Buscar presupuestos"
+              />
               <select v-model="presupuestoFiltroTipo">
                 <option value="">Todos los tipos</option>
                 <option v-for="tipo in tipos" :key="tipo.id" :value="String(tipo.id)">{{ tipo.nombre }}</option>
@@ -674,6 +790,69 @@ onMounted(loadPanelData);
                 <button type="button" class="btn-primary" @click="changeEstado(presupuesto, 'aceptado')">Aceptar</button>
                 <button type="button" class="btn-danger" @click="changeEstado(presupuesto, 'rechazado')">Denegar</button>
                 <button type="button" class="btn-neutral" @click="changeEstado(presupuesto, 'pendiente')">Pendiente</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contactos -->
+        <div v-show="activeSection === 'contactos'" class="panel-block">
+          <div class="section-header">
+            <h3>Formularios recibidos</h3>
+            <div class="header-filters">
+              <input
+                v-model="contactoBusqueda"
+                type="search"
+                placeholder="Buscar por nombre, email, teléfono, asunto o mensaje..."
+                aria-label="Buscar contactos"
+              />
+              <select v-model="contactoFiltroEstado">
+                <option value="">Todos los estados</option>
+                <option value="nuevos">Nuevos</option>
+                <option value="leidos">Leídos</option>
+                <option value="pendientes">Pendientes de respuesta</option>
+                <option value="respondidos">Respondidos</option>
+              </select>
+              <select v-model="contactoOrden">
+                <option value="fecha_desc">Recepción: más reciente</option>
+                <option value="fecha_asc">Recepción: más antigua</option>
+              </select>
+            </div>
+          </div>
+
+          <ul class="item-list">
+            <li v-for="contacto in contactosFiltrados" :key="contacto.id" class="presupuesto-row">
+              <div class="presupuesto-info">
+                <strong>#{{ contacto.id }} · {{ contacto.nombre }}</strong>
+                <span>{{ contacto.email }} · {{ contacto.telefono || 'Sin teléfono' }}</span>
+                <span class="muted">Asunto: {{ contacto.asunto || 'Sin asunto' }}</span>
+                <span class="muted">{{ formatDate(contacto.fecha_recepcion || contacto.created_at) }}</span>
+                <span class="muted">{{ contacto.mensaje }}</span>
+                <span :class="['badge', estadoContactoColor(contacto)]">{{ estadoContacto(contacto) }}</span>
+              </div>
+              <div class="action-group">
+                <button
+                  type="button"
+                  class="btn-neutral"
+                  @click="actualizarEstadoContacto(contacto, { leido: !contacto.leido })"
+                >
+                  {{ contacto.leido ? 'Marcar no leído' : 'Marcar leído' }}
+                </button>
+                <button
+                  type="button"
+                  :class="contacto.respondido ? 'btn-neutral' : 'btn-primary'"
+                  @click="actualizarEstadoContacto(contacto, { respondido: !contacto.respondido, leido: true })"
+                >
+                  {{ contacto.respondido ? 'Marcar no respondido' : 'Marcar respondido' }}
+                </button>
+                <button
+                  type="button"
+                  class="btn-primary"
+                  @click="responderContacto(contacto)"
+                >
+                  Responder
+                </button>
+                <button type="button" class="btn-danger" @click="removeContacto(contacto.id)">Eliminar</button>
               </div>
             </li>
           </ul>
@@ -1021,6 +1200,16 @@ onMounted(loadPanelData);
   min-width: 140px;
 }
 
+.header-filters input {
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #ced9e5;
+  font-size: 0.88rem;
+  background: #fff;
+  flex: 2;
+  min-width: 220px;
+}
+
 .concepto-form-card {
   background: #f0f5fa;
   border: 1px solid #ced9e5;
@@ -1185,6 +1374,10 @@ onMounted(loadPanelData);
   gap: 0.4rem;
   align-items: center;
   flex: 1;
+}
+
+.presupuesto-info .muted {
+  white-space: normal;
 }
 
 .estado-select {

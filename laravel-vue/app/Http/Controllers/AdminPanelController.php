@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Album;
 use App\Models\Concepto;
+use App\Models\Contacto;
 use App\Models\Presupuesto;
 use App\Models\Servicio;
 use App\Models\TipoPresupuesto;
@@ -61,6 +62,25 @@ class AdminPanelController extends Controller
                 ];
             })->values();
 
+        $contactos = Contacto::latest('fecha_recepcion')
+            ->latest('id')
+            ->take(100)
+            ->get()
+            ->map(function (Contacto $contacto) {
+                return [
+                    'id' => $contacto->id,
+                    'nombre' => $contacto->nombre,
+                    'email' => $contacto->email,
+                    'telefono' => $contacto->telefono,
+                    'asunto' => $contacto->asunto,
+                    'mensaje' => $contacto->mensaje,
+                    'leido' => (bool) $contacto->leido,
+                    'respondido' => (bool) $contacto->respondido,
+                    'fecha_recepcion' => optional($contacto->fecha_recepcion)->toIso8601String(),
+                    'created_at' => optional($contacto->created_at)->toIso8601String(),
+                ];
+            })->values();
+
         $servicios = Servicio::orderBy('nombre')->get()->map(fn (Servicio $servicio) => $this->mapServicio($servicio))->values();
         $albumes = Album::orderBy('nombre')->get();
         $usuarios = User::select('id', 'name', 'email', 'rol', 'activo')->orderBy('name')->get();
@@ -70,6 +90,7 @@ class AdminPanelController extends Controller
             'unidades' => $unidades,
             'conceptos' => $conceptos,
             'presupuestos' => $presupuestos,
+            'contactos' => $contactos,
             'servicios' => $servicios,
             'albumes' => $albumes,
             'usuarios' => $usuarios,
@@ -352,6 +373,31 @@ class AdminPanelController extends Controller
         $presupuesto->update($validated);
 
         return response()->json(['estado' => $presupuesto->estado]);
+    }
+
+    public function updateEstadoContacto(Request $request, Contacto $contacto): JsonResponse
+    {
+        $validated = $request->validate([
+            'leido' => ['sometimes', 'boolean'],
+            'respondido' => ['sometimes', 'boolean'],
+        ]);
+
+        if ($validated === []) {
+            return response()->json(['message' => 'No se enviaron cambios.'], 422);
+        }
+
+        $contacto->update($validated);
+
+        return response()->json([
+            'leido' => (bool) $contacto->leido,
+            'respondido' => (bool) $contacto->respondido,
+        ]);
+    }
+
+    public function deleteContacto(Contacto $contacto): JsonResponse
+    {
+        $contacto->delete();
+        return response()->json(['message' => 'Contacto eliminado.']);
     }
 
     public function showPresupuesto(Presupuesto $presupuesto): JsonResponse

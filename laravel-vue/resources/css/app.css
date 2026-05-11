@@ -17,6 +17,13 @@
 
 body {
     margin: 0;
+    font-size: 17px;
+}
+
+@media (min-width: 1024px) {
+    body {
+        font-size: 18px;
+    }
 }
 
 .index-hero-gradient {

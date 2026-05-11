@@ -14,6 +14,7 @@ const observaciones = ref('');
 const datosPersonalesConfirmados = ref(false);
 const seccionDatosExpandida = ref(true);
 const errorConfirmacionDatos = ref('');
+const metrosCuadradosEditando = ref(true);
 const errorConceptos = ref('');
 const errorVerPresupuesto = ref('');
 const mostrarModalConfirmacion = ref(false);
@@ -136,32 +137,32 @@ watch(conceptoSeleccionadoId, () => {
 
 const confirmarDatos = () => {
   if (!datosPersonalesCompletos.value) {
-    errorConfirmacionDatos.value = 'Debes completar nombre, teléfono, email, dirección y ciudad.';
+    setTimedError(errorConfirmacionDatos, 'Debes completar nombre, teléfono, email, dirección y ciudad.');
     return;
   }
 
   if (!nombreValido.value) {
-    errorConfirmacionDatos.value = 'Introduce un nombre válido (solo letras y espacios).';
+    setTimedError(errorConfirmacionDatos, 'Introduce un nombre válido (solo letras y espacios).');
     return;
   }
 
   if (!telefonoValido.value) {
-    errorConfirmacionDatos.value = 'Introduce un teléfono válido (8-20 dígitos, permite +, espacios y guiones).';
+    setTimedError(errorConfirmacionDatos, 'Introduce un teléfono válido (8-20 dígitos, permite +, espacios y guiones).');
     return;
   }
 
   if (!emailValido.value) {
-    errorConfirmacionDatos.value = 'Introduce un correo electrónico válido.';
+    setTimedError(errorConfirmacionDatos, 'Introduce un correo electrónico válido.');
     return;
   }
 
   if (!direccionValida.value) {
-    errorConfirmacionDatos.value = 'La dirección debe tener al menos 5 caracteres.';
+    setTimedError(errorConfirmacionDatos, 'La dirección debe tener al menos 5 caracteres.');
     return;
   }
 
   if (!ciudadValida.value) {
-    errorConfirmacionDatos.value = 'Introduce una ciudad válida (solo letras y espacios).';
+    setTimedError(errorConfirmacionDatos, 'Introduce una ciudad válida (solo letras y espacios).');
     return;
   }
 
@@ -175,24 +176,24 @@ const anadirConcepto = () => {
   errorConceptos.value = '';
 
   if (!datosValidadosParaConceptos.value) {
-    errorConceptos.value = 'Primero completa y confirma tus datos personales.';
+    setTimedError(errorConceptos, 'Primero completa y confirma tus datos personales.');
     return;
   }
 
   if (!categoriaSeleccionada.value || !conceptoSeleccionadoId.value) {
-    errorConceptos.value = 'Selecciona categoría y trabajo específico.';
+    setTimedError(errorConceptos, 'Selecciona categoría y trabajo específico.');
     return;
   }
 
   const concepto = conceptoSeleccionado.value;
   if (!concepto || Number(cantidad.value) <= 0) {
-    errorConceptos.value = 'Indica una cantidad válida para el trabajo.';
+    setTimedError(errorConceptos, 'Indica una cantidad válida para el trabajo.');
     return;
   }
 
   const m2 = Number(metrosCuadrados.value);
   if (!Number.isFinite(m2) || m2 <= 0) {
-    errorConceptos.value = 'Indica los metros cuadrados del habitáculo a reformar.';
+    setTimedError(errorConceptos, 'Indica los metros cuadrados del habitáculo a reformar.');
     return;
   }
 
@@ -200,7 +201,7 @@ const anadirConcepto = () => {
     categoriaBloqueadaId.value
     && String(categoriaSeleccionada.value) !== String(categoriaBloqueadaId.value)
   ) {
-    errorConceptos.value = `El presupuesto actual es de ${nombreCategoriaPorId(categoriaBloqueadaId.value)}. No puedes mezclar categorías.`;
+    setTimedError(errorConceptos, `El presupuesto actual es de ${nombreCategoriaPorId(categoriaBloqueadaId.value)}. No puedes mezclar categorías.`);
     return;
   }
 
@@ -260,11 +261,11 @@ const eliminarLinea = (id) => {
 const verPresupuesto = () => {
   errorVerPresupuesto.value = '';
   if (!datosValidadosParaConceptos.value) {
-    errorVerPresupuesto.value = 'Completa y confirma tus datos personales para continuar.';
+    setTimedError(errorVerPresupuesto, 'Completa y confirma tus datos personales para continuar.');
     return;
   }
   if (lineas.value.length === 0) {
-    errorVerPresupuesto.value = 'Añade al menos un concepto para ver el presupuesto.';
+    setTimedError(errorVerPresupuesto, 'Añade al menos un concepto para ver el presupuesto.');
     return;
   }
 
@@ -320,7 +321,7 @@ const confirmarYGuardarPresupuesto = async () => {
     mostrarModalConfirmacion.value = false;
     window.print();
   } catch (error) {
-    errorVerPresupuesto.value = error.message || 'No se pudo guardar el presupuesto.';
+    setTimedError(errorVerPresupuesto, error.message || 'No se pudo guardar el presupuesto.');
   } finally {
     guardandoPresupuesto.value = false;
   }
@@ -329,6 +330,34 @@ const confirmarYGuardarPresupuesto = async () => {
 const cerrarModalConfirmacion = () => {
   if (guardandoPresupuesto.value) return;
   mostrarModalConfirmacion.value = false;
+};
+
+const toggleEdicionMetros = () => {
+  if (!metrosCuadradosEditando.value) {
+    metrosCuadradosEditando.value = true;
+    return;
+  }
+
+  const raw = String(metrosCuadrados.value ?? '').trim();
+  if (!raw.length) {
+    setTimedError(errorConceptos, 'Debes indicar el tamaño del habitáculo antes de confirmar.');
+    return;
+  }
+
+  const m2 = Number(raw);
+  if (!Number.isFinite(m2) || m2 <= 0) {
+    setTimedError(errorConceptos, 'Indica los metros cuadrados del habitáculo a reformar.');
+    return;
+  }
+
+  metrosCuadradosEditando.value = false;
+};
+
+const setTimedError = (errorRef, message) => {
+  errorRef.value = message;
+  setTimeout(() => {
+    if (errorRef.value === message) errorRef.value = '';
+  }, 5000);
 };
 
 const formatEUR = (value) =>
@@ -361,9 +390,15 @@ const formatEUR = (value) =>
                 <h2 class="text-2xl font-bold uppercase tracking-widest text-primary">1. Datos del Cliente</h2>
                 <button
                   type="button"
-                  class="text-sm font-semibold text-primary hover:underline"
+                  class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all"
+                  :class="seccionDatosExpandida
+                    ? 'border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-700'
+                    : 'border-primary bg-primary text-white hover:bg-primary/90'"
                   @click="seccionDatosExpandida = !seccionDatosExpandida"
                 >
+                  <span class="material-symbols-outlined text-base leading-none">
+                    {{ seccionDatosExpandida ? 'expand_less' : 'edit' }}
+                  </span>
                   {{ seccionDatosExpandida ? 'Minimizar' : 'Editar datos' }}
                 </button>
               </div>
@@ -466,12 +501,23 @@ const formatEUR = (value) =>
                 <p v-if="errorConfirmacionDatos" class="alerta-validacion">{{ errorConfirmacionDatos }}</p>
               </form>
 
-              <div v-if="!seccionDatosExpandida" class="resumen-datos text-sm text-gray-700">
-                <p><strong>Nombre:</strong> {{ clienteNombre || '-' }}</p>
-                <p><strong>Teléfono:</strong> {{ clienteTelefono || '-' }}</p>
-                <p><strong>Email:</strong> {{ clienteEmail || '-' }}</p>
-                <p><strong>Dirección:</strong> {{ clienteDireccion || '-' }}</p>
-                <p><strong>Ciudad:</strong> {{ clienteCiudad || '-' }}</p>
+              <div v-if="!seccionDatosExpandida" class="resumen-datos">
+                <span class="resumen-chip">
+                  <span class="material-symbols-outlined">person</span>
+                  {{ clienteNombre || '-' }}
+                </span>
+                <span class="resumen-chip">
+                  <span class="material-symbols-outlined">call</span>
+                  {{ clienteTelefono || '-' }}
+                </span>
+                <span class="resumen-chip">
+                  <span class="material-symbols-outlined">mail</span>
+                  {{ clienteEmail || '-' }}
+                </span>
+                <span class="resumen-chip">
+                  <span class="material-symbols-outlined">location_on</span>
+                  {{ clienteDireccion ? `${clienteDireccion}, ${clienteCiudad}` : '-' }}
+                </span>
               </div>
             </div>
 
@@ -573,18 +619,30 @@ const formatEUR = (value) =>
                   </div>
 
                   <div>
-                    <label class="block text-sm font-semibold mb-2" for="metros_cuadrados">Tamaño del habitáculo (m2)</label>
-                    <input
-                      id="metros_cuadrados"
-                      v-model.number="metrosCuadrados"
-                      type="number"
-                      min="1"
-                      step="0.1"
-                      placeholder="Ej. 150"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                      :disabled="!datosValidadosParaConceptos"
-                      required
-                    />
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                      <label class="block text-sm font-semibold" for="metros_cuadrados">Tamaño del habitáculo (m2)</label>
+                    </div>
+                    <div class="flex gap-2">
+                      <input
+                        id="metros_cuadrados"
+                        v-model.number="metrosCuadrados"
+                        type="number"
+                        min="1"
+                        step="0.1"
+                        placeholder="Ej. 150"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                        :disabled="!datosValidadosParaConceptos || !metrosCuadradosEditando"
+                        required
+                      />
+                      <button
+                        type="button"
+                        :disabled="!datosValidadosParaConceptos"
+                        class="shrink-0 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white px-4 rounded-lg font-bold text-sm transition-all"
+                        @click="toggleEdicionMetros"
+                      >
+                        {{ metrosCuadradosEditando ? 'Listo' : 'Editar' }}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -746,7 +804,6 @@ const formatEUR = (value) =>
 
       <div class="print-company-footer">
         <div class="company-footer-brand">
-          <img class="company-footer-logo" :src="logoUrl" alt="Logo ProReformasVLC" />
           <div>
             <p class="company-footer-name">ProReformasVLC</p>
             <p class="company-footer-tag">Reformas y rehabilitacion de vivienda</p>
@@ -809,8 +866,31 @@ const formatEUR = (value) =>
 }
 
 .resumen-datos {
-  display: grid;
-  gap: 0.45rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.resumen-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resumen-chip .material-symbols-outlined {
+  font-size: 0.95rem;
+  color: var(--color-primary, #b08d57);
 }
 
 .modal-overlay {
@@ -1019,14 +1099,6 @@ const formatEUR = (value) =>
     display: flex;
     align-items: center;
     gap: 10px;
-  }
-
-  .company-footer-logo {
-    width: 42px;
-    height: 42px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
   }
 
   .company-footer-name {

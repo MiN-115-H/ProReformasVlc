@@ -6,6 +6,7 @@ import ServiciosPage from '../pages/ServiciosPage.vue';
 import ProyectosPage from '../pages/ProyectosPage.vue';
 import PresupuestosPage from '../pages/PresupuestosPage.vue';
 import ContactoPage from '../pages/ContactoPage.vue';
+import ContactoEnviadoPage from '../pages/ContactoEnviadoPage.vue';
 import AdminPanelPage from '../pages/AdminPanelPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
 
@@ -16,6 +17,7 @@ const routes = [
   { path: '/proyectos', name: 'proyectos', component: ProyectosPage },
   { path: '/presupuestos', name: 'presupuestos', component: PresupuestosPage },
   { path: '/contacto', name: 'contacto', component: ContactoPage },
+  { path: '/contacto/enviado', name: 'contacto-enviado', component: ContactoEnviadoPage },
   { path: '/login', name: 'login', component: LoginPage, meta: { minimalLayout: true, guestOnly: true } },
   { path: '/admin/panel', name: 'admin-panel', component: AdminPanelPage, meta: { requiresAdmin: true } },
 ];

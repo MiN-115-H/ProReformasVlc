@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Concepto;
+use App\Models\Contacto;
 use App\Models\Presupuesto;
 use App\Models\Servicio;
 use App\Models\TipoPresupuesto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -90,5 +92,81 @@ class PresupuestoController extends Controller
         return response()->json([
             'servicios' => $servicios,
         ]);
+    }
+
+    public function storeContacto(Request $request): JsonResponse
+    {
+        $recaptchaEnabled = !empty(config('services.recaptcha.site_key')) && !empty(config('services.recaptcha.secret_key'));
+
+        $validated = $request->validate([
+            'nombre' => ['required', 'string', 'min:3', 'max:100', 'regex:/^[\pL\s\-\']+$/u'],
+            'email' => ['required', 'email', 'max:150'],
+            'telefono' => ['nullable', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]{8,20}$/'],
+            'asunto' => ['nullable', 'string', 'max:150'],
+            'mensaje' => ['required', 'string', 'min:10', 'max:4000'],
+            'website' => ['nullable', 'string', 'max:0'],
+            'recaptcha_token' => ['nullable', 'string'],
+        ]);
+
+        if (!empty($validated['website'] ?? '')) {
+            return response()->json(['message' => 'Solicitud no válida.'], 422);
+        }
+
+        if ($recaptchaEnabled && !$this->verifyRecaptchaToken($validated['recaptcha_token'] ?? null)) {
+            return response()->json(['message' => 'No se pudo verificar la seguridad del formulario. Inténtalo de nuevo.'], 422);
+        }
+
+        $contacto = Contacto::create([
+            'nombre' => $validated['nombre'],
+            'email' => $validated['email'],
+            'telefono' => $validated['telefono'] ?? null,
+            'asunto' => $validated['asunto'] ?? 'Consulta web',
+            'mensaje' => $validated['mensaje'],
+            'leido' => false,
+            'respondido' => false,
+            'fecha_recepcion' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'Formulario enviado correctamente.',
+            'id' => $contacto->id,
+        ], 201);
+    }
+
+    private function verifyRecaptchaToken(?string $token): bool
+    {
+        if (!$token) {
+            return false;
+        }
+
+        $secretKey = (string) config('services.recaptcha.secret_key');
+        $expectedAction = (string) config('services.recaptcha.action', 'contact_submit');
+        $minScore = (float) config('services.recaptcha.min_score', 0.5);
+
+        if ($secretKey === '') {
+            return false;
+        }
+
+        try {
+            $response = Http::asForm()
+                ->timeout(8)
+                ->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => $secretKey,
+                    'response' => $token,
+                ]);
+
+            $data = $response->json();
+
+            if (!$response->ok() || !is_array($data) || !($data['success'] ?? false)) {
+                return false;
+            }
+
+            $action = (string) ($data['action'] ?? '');
+            $score = (float) ($data['score'] ?? 0);
+
+            return $action === $expectedAction && $score >= $minScore;
+        } catch (\Throwable $exception) {
+            return false;
+        }
     }
 }
