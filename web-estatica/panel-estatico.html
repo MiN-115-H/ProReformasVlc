@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel de Control Estático - ProReformasVLC</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial;background:#f1f5f9;display:flex}
+aside{width:260px;background:#1b4332;color:white;height:100vh;padding:20px}
+aside h2{margin-bottom:20px}
+aside button{width:100%;padding:12px;margin:6px 0;border:none;background:#2d6a4f;color:white;border-radius:8px;cursor:pointer;text-align:left}
+aside button:hover{background:#40916c}
+main{flex:1;padding:25px}
+.card{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05)}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+button{cursor:pointer}
+.btn{padding:6px 10px;border:none;border-radius:6px}
+.btn-add{background:#1b4332;color:white;margin-top:10px}
+.btn-del{background:#e63946;color:white}
+input,select,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:6px}
+.hidden{display:none}
+.label{font-size:12px;color:#555;margin-top:8px}
+</style>
+</head>
+<body>
+
+<aside>
+<h2>🏗️ Admin</h2>
+<button onclick="show('confPresupuesto')">Tipos Presupuesto</button>
+<button onclick="show('unidades')">Unidades</button>
+<button onclick="show('conceptos')">Conceptos</button>
+<button onclick="show('presupuestos')">Presupuestos</button>
+<button onclick="show('servicios')">Servicios</button>
+<button onclick="show('albumes')">Álbumes</button>
+<button onclick="show('usuarios')">Usuarios</button>
+</aside>
+
+<main>
+
+<div id="confPresupuesto" class="card">
+<h3>Tipos de Presupuesto</h3>
+<table>
+<thead><tr><th>Nombre</th><th>Descripción</th></tr></thead>
+<tbody>
+<tr><td>Cocina</td><td>Reformas de cocina completas</td></tr>
+<tr><td>Baño</td><td>Reformas y rediseño de baños</td></tr>
+<tr><td>Integral</td><td>Reformas integrales de vivienda</td></tr>
+</tbody>
+</table>
+</div>
+
+<div id="unidades" class="card hidden">
+<h3>Unidades</h3>
+<table>
+<thead><tr><th>Nombre</th><th>Abrev</th></tr></thead>
+<tbody>
+<tr><td>Metro cuadrado</td><td>m2</td></tr>
+<tr><td>Unidad</td><td>ud</td></tr>
+<tr><td>Hora</td><td>h</td></tr>
+</tbody>
+</table>
+</div>
+
+<div id="conceptos" class="card hidden">
+<h3>Conceptos</h3>
+<table>
+<thead><tr><th>Descripción</th><th>Precio</th><th>Unidad</th><th>Tipo</th></tr></thead>
+<tbody>
+<tr><td>Alicatado cocina</td><td>44.00</td><td>m2</td><td>Cocina</td></tr>
+<tr><td>Cambio de bañera por ducha</td><td>890.00</td><td>ud</td><td>Baño</td></tr>
+<tr><td>Mano de obra oficial</td><td>35.00</td><td>h</td><td>Integral</td></tr>
+</tbody>
+</table>
+</div>
+
+<div id="presupuestos" class="card hidden">
+<h3>Presupuestos</h3>
+<table>
+<thead><tr><th>Cliente</th><th>Ciudad</th><th>Tipo</th></tr></thead>
+<tbody>
+<tr><td>Juan Pérez</td><td>Valencia</td><td>Cocina</td></tr>
+<tr><td>María López</td><td>Valencia</td><td>Baño</td></tr>
+</tbody>
+</table>
+</div>
+
+<div id="servicios" class="card hidden">
+<h3>Servicios</h3>
+<table>
+<thead><tr><th>Nombre</th><th>Descripción</th></tr></thead>
+<tbody>
+<tr><td>Albañilería</td><td>Tabiques, alicatados, pavimentos y molduras</td></tr>
+<tr><td>Carpintería</td><td>Puertas, armarios, tarimas y muebles a medida</td></tr>
+<tr><td>Fontanería</td><td>Instalaciones multicapa y bajantes comunitarias</td></tr>
+<tr><td>Electricidad</td><td>Cuadros, iluminación y acometidas</td></tr>
+<tr><td>Pintura</td><td>Alisados, estucos y acabados decorativos</td></tr>
+<tr><td>Aire acondicionado</td><td>Instalación de maquinaria y conductos</td></tr>
+</tbody>
+</table>
+</div>
+
+<div id="albumes" class="card hidden">
+<h3>Álbumes</h3>
+<table>
+<thead><tr><th>Nombre</th></tr></thead>
+<tbody>
+<tr><td>Reforma Cocina 2026</td></tr>
+<tr><td>Baño Moderno</td></tr>
+</tbody>
+</table>
+</div>
+
+<div id="usuarios" class="card hidden">
+<h3>Usuarios</h3>
+<table>
+<thead><tr><th>Nombre</th><th>Email</th></tr></thead>
+<tbody>
+<tr><td>Admin ProReformas</td><td>admin@proreformasvlc.com</td></tr>
+<tr><td>Editor Demo</td><td>editor@proreformasvlc.com</td></tr>
+</tbody>
+</table>
+</div>
+
+</main>
+
+<script>
+function show(id){document.querySelectorAll('.card').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+</script>
+
+</body>
+</html>
