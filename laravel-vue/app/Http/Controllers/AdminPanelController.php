@@ -92,7 +92,7 @@ class AdminPanelController extends Controller
                 'fotos' => $album->fotos->map(function($foto) {
                     return [
                         'id' => $foto->id,
-                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : Storage::disk('public')->url($foto->url),
+                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
                         'descripcion' => $foto->descripcion,
                         'orden' => $foto->orden,
                     ];
@@ -350,7 +350,7 @@ class AdminPanelController extends Controller
             'fotos' => $album->fotos->map(function($foto) {
                 return [
                     'id' => $foto->id,
-                    'url' => str_starts_with($foto->url, 'http') ? $foto->url : Storage::disk('public')->url($foto->url),
+                    'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
                     'descripcion' => $foto->descripcion,
                     'orden' => $foto->orden,
                 ];
@@ -387,7 +387,7 @@ class AdminPanelController extends Controller
 
         return response()->json([
             'id' => $foto->id,
-            'url' => Storage::disk('public')->url($path),
+            'url' => '/storage/' . $path,
             'descripcion' => $foto->descripcion,
             'orden' => $foto->orden,
         ], 201);

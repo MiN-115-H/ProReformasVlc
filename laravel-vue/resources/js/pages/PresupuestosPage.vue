@@ -78,7 +78,7 @@ const datosValidadosParaConceptos = computed(() =>
 const nombreCategoriaPorId = (id) => {
   const tipo = tipos.value.find((item) => String(item.id) === String(id));
   if (!tipo) return 'Reforma';
-  return tipo.nombre === 'Bano' ? 'Baño' : tipo.nombre;
+  return tipo.nombre;
 };
 
 const tituloPresupuesto = computed(() => {

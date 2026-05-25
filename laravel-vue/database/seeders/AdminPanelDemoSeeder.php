@@ -31,7 +31,7 @@ class AdminPanelDemoSeeder extends Seeder
         );
 
         $tipoCocina = TipoPresupuesto::updateOrCreate(['nombre' => 'Cocina'], ['descripcion' => 'Reformas de cocina completas']);
-        $tipoBano = TipoPresupuesto::updateOrCreate(['nombre' => 'Bano'], ['descripcion' => 'Reformas y rediseno de banos']);
+        $tipoBano = TipoPresupuesto::updateOrCreate(['nombre' => 'Baño'], ['descripcion' => 'Reformas y rediseño de baños']);
         $tipoIntegral = TipoPresupuesto::updateOrCreate(['nombre' => 'Integral'], ['descripcion' => 'Reformas integrales de vivienda']);
 
         $unidadM2 = Unidad::updateOrCreate(['abreviatura' => 'm2'], ['nombre' => 'Metro cuadrado']);
@@ -43,7 +43,7 @@ class AdminPanelDemoSeeder extends Seeder
             ['precio_base' => 44.00, 'unidad_id' => $unidadM2->id, 'tipo_presupuesto_id' => $tipoCocina->id, 'activo' => true]
         );
         Concepto::updateOrCreate(
-            ['descripcion' => 'Cambio de banera por ducha'],
+            ['descripcion' => 'Cambio de bañera por ducha'],
             ['precio_base' => 890.00, 'unidad_id' => $unidadUd->id, 'tipo_presupuesto_id' => $tipoBano->id, 'activo' => true]
         );
         Concepto::updateOrCreate(
@@ -52,12 +52,12 @@ class AdminPanelDemoSeeder extends Seeder
         );
 
         $serviciosData = [
-            ['nombre' => 'Albanileria', 'descripcion' => 'Tabiques, alicatados, pavimentos y molduras', 'precio_base' => 38.00],
-            ['nombre' => 'Carpinteria', 'descripcion' => 'Puertas, armarios, tarimas y muebles a medida', 'precio_base' => 42.00],
-            ['nombre' => 'Fontaneria', 'descripcion' => 'Instalaciones multicapa y bajantes comunitarias', 'precio_base' => 40.00],
-            ['nombre' => 'Electricidad', 'descripcion' => 'Cuadros, iluminacion y acometidas', 'precio_base' => 37.00],
+            ['nombre' => 'Albañilería', 'descripcion' => 'Tabiques, alicatados, pavimentos y molduras', 'precio_base' => 38.00],
+            ['nombre' => 'Carpintería', 'descripcion' => 'Puertas, armarios, tarimas y muebles a medida', 'precio_base' => 42.00],
+            ['nombre' => 'Fontanería', 'descripcion' => 'Instalaciones multicapa y bajantes comunitarias', 'precio_base' => 40.00],
+            ['nombre' => 'Electricidad', 'descripcion' => 'Cuadros, iluminación y acometidas', 'precio_base' => 37.00],
             ['nombre' => 'Pintura', 'descripcion' => 'Alisados, estucos y acabados decorativos', 'precio_base' => 16.00],
-            ['nombre' => 'Aire acondicionado', 'descripcion' => 'Instalacion de maquinaria y conductos', 'precio_base' => 58.00],
+            ['nombre' => 'Aire acondicionado', 'descripcion' => 'Instalación de maquinaria y conductos', 'precio_base' => 58.00],
         ];
 
         $servicios = collect($serviciosData)->map(function ($servicio) {
@@ -75,8 +75,8 @@ class AdminPanelDemoSeeder extends Seeder
         $articulo1 = Articulo::updateOrCreate(
             ['nombre' => 'Kit alicatado premium'],
             [
-                'servicio_id' => $servicios->firstWhere('nombre', 'Albanileria')->id,
-                'descripcion' => 'Materiales ceramicos + adhesivos de alta gama',
+                'servicio_id' => $servicios->firstWhere('nombre', 'Albañilería')->id,
+                'descripcion' => 'Materiales cerámicos + adhesivos de alta gama',
                 'precio' => 520.00,
                 'activo' => true,
                 'fecha_creacion' => now(),
@@ -84,10 +84,10 @@ class AdminPanelDemoSeeder extends Seeder
         );
 
         $articulo2 = Articulo::updateOrCreate(
-            ['nombre' => 'Pack banera a ducha'],
+            ['nombre' => 'Pack bañera a ducha'],
             [
-                'servicio_id' => $servicios->firstWhere('nombre', 'Fontaneria')->id,
-                'descripcion' => 'Plato de ducha, mampara y griferia',
+                'servicio_id' => $servicios->firstWhere('nombre', 'Fontanería')->id,
+                'descripcion' => 'Plato de ducha, mampara y grifería',
                 'precio' => 980.00,
                 'activo' => true,
                 'fecha_creacion' => now(),
@@ -99,8 +99,8 @@ class AdminPanelDemoSeeder extends Seeder
             ['descripcion' => 'Reformas recientes de cocinas', 'fecha_creacion' => now()]
         );
         $albumBanos = Album::updateOrCreate(
-            ['nombre' => 'Banos 2026'],
-            ['descripcion' => 'Antes y despues de banos', 'fecha_creacion' => now()]
+            ['nombre' => 'Baños 2026'],
+            ['descripcion' => 'Antes y después de baños', 'fecha_creacion' => now()]
         );
 
         Foto::updateOrCreate(
@@ -113,22 +113,22 @@ class AdminPanelDemoSeeder extends Seeder
         );
         Foto::updateOrCreate(
             ['album_id' => $albumBanos->id, 'orden' => 1],
-            ['url' => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80', 'descripcion' => 'Bano compacto optimizado', 'fecha_subida' => now()]
+            ['url' => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80', 'descripcion' => 'Baño compacto optimizado', 'fecha_subida' => now()]
         );
 
         Contacto::updateOrCreate(
             ['email' => 'maria.gomez@email.com', 'asunto' => 'Reforma cocina en Benimaclet'],
-            ['nombre' => 'Maria Gomez', 'telefono' => '620123456', 'mensaje' => 'Quiero presupuesto para renovar cocina de 12 m2.', 'leido' => false, 'respondido' => false, 'fecha_recepcion' => now()->subDays(2)]
+            ['nombre' => 'María Gómez', 'telefono' => '620123456', 'mensaje' => 'Quiero presupuesto para renovar cocina de 12 m2.', 'leido' => false, 'respondido' => false, 'fecha_recepcion' => now()->subDays(2)]
         );
         Contacto::updateOrCreate(
-            ['email' => 'javier.ruiz@email.com', 'asunto' => 'Cambio de banera'],
-            ['nombre' => 'Javier Ruiz', 'telefono' => '645987321', 'mensaje' => 'Necesito cambiar banera por plato de ducha en Valencia.', 'leido' => true, 'respondido' => false, 'fecha_recepcion' => now()->subDay()]
+            ['email' => 'javier.ruiz@email.com', 'asunto' => 'Cambio de bañera'],
+            ['nombre' => 'Javier Ruiz', 'telefono' => '645987321', 'mensaje' => 'Necesito cambiar bañera por plato de ducha en Valencia.', 'leido' => true, 'respondido' => false, 'fecha_recepcion' => now()->subDay()]
         );
 
         $presupuesto1 = Presupuesto::updateOrCreate(
             ['cliente_email' => 'laura.martin@email.com'],
             [
-                'cliente_nombre' => 'Laura Martin',
+                'cliente_nombre' => 'Laura Martín',
                 'cliente_telefono' => '611223344',
                 'direccion' => 'Calle Quart 15',
                 'ciudad' => 'Valencia',
@@ -149,14 +149,14 @@ class AdminPanelDemoSeeder extends Seeder
         $presupuesto2 = Presupuesto::updateOrCreate(
             ['cliente_email' => 'antonio.perez@email.com'],
             [
-                'cliente_nombre' => 'Antonio Perez',
+                'cliente_nombre' => 'Antonio Pérez',
                 'cliente_telefono' => '600998877',
                 'direccion' => 'Av. del Cid 101',
                 'ciudad' => 'Valencia',
-                'observaciones' => 'Incluye cambio de fontaneria',
+                'observaciones' => 'Incluye cambio de fontanería',
                 'fecha_presupuesto' => now()->subDay()->toDateString(),
                 'lineas' => [
-                    ['descripcion' => 'Cambio de banera por ducha', 'cantidad' => 1, 'precio' => 890, 'subtotal' => 890],
+                    ['descripcion' => 'Cambio de bañera por ducha', 'cantidad' => 1, 'precio' => 890, 'subtotal' => 890],
                 ],
                 'subtotal' => 890,
                 'iva' => 186.90,

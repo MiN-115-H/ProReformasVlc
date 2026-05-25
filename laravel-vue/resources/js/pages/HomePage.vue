@@ -11,7 +11,7 @@
         <div class="bg-black/30 backdrop-blur-sm p-8 md:p-12 border-l-4 border-primary max-w-2xl rounded-sm">
           <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight">CALIDAD Y SERVICIO</h1>
           <p class="text-lg md:text-xl font-light mb-10 leading-relaxed text-gray-200">
-            Confiar en <span class="font-bold text-white">Pro Reformas Valencia</span>, es tener la completa seguridad de poder escoger la solucion que mejor se adapte a las exigencias de cada situacion.
+            Confiar en <span class="font-bold text-white">Pro Reformas Valencia</span>, es tener la completa seguridad de poder escoger la solución que mejor se adapte a las exigencias de cada situación.
           </p>
           <div class="flex flex-col sm:flex-row gap-4">
             <RouterLink
@@ -44,7 +44,7 @@
             </div>
             <div class="p-8 text-center text-white">
               <h3 class="text-xl font-bold uppercase tracking-widest mb-4">Reforma de Cocina</h3>
-              <p class="text-gray-400 text-sm leading-relaxed">Ya puede realizar la Reforma Integral de su Cocina, al mejor Precio de Valencia y con las maximas Garantias.</p>
+              <p class="text-gray-400 text-sm leading-relaxed">Ya puede realizar la Reforma Integral de su Cocina, al mejor Precio de Valencia y con las máximas Garantías.</p>
             </div>
           </article>
           <article class="group bg-secondary rounded-lg overflow-hidden shadow-2xl transition-transform hover:-translate-y-2">
@@ -53,16 +53,16 @@
             </div>
             <div class="p-8 text-center text-white">
               <h3 class="text-xl font-bold uppercase tracking-widest mb-4">Reforma Integral</h3>
-              <p class="text-gray-400 text-sm leading-relaxed">Si esta pensando en montar su propio negocio o renovar el que ya tiene, le ayudamos en todo el proceso.</p>
+              <p class="text-gray-400 text-sm leading-relaxed">Si está pensando en montar su propio negocio o renovar el que ya tiene, le ayudamos en todo el proceso.</p>
             </div>
           </article>
           <article class="group bg-secondary rounded-lg overflow-hidden shadow-2xl transition-transform hover:-translate-y-2">
             <div class="h-64 overflow-hidden">
-              <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6R1i90CMHIV2-UEEhuZS1yuw05LRdztTHnZk_rXPPkUuFNHRfam7-k1xfE8n5KV7sAbUqJfze5tvYYOWpoL6YOO4S7BeSCQB_v2SRpvGS_KMS6UJdyi_8MLJgzbTTMdT4p_se-yLhubpLr_vzAsK_rCMIzss5xc33TTDxNUB8NOUyo4BlK5NV0OajZTslNf_Zq7efEvGnjxXcWhBfL0xXm1Mfd6QecUyFK4yYOBskFXE9GJd_UyzlAutwVYyQMC4D0ff6381K0Z2-" alt="Reforma de Bano" />
+              <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6R1i90CMHIV2-UEEhuZS1yuw05LRdztTHnZk_rXPPkUuFNHRfam7-k1xfE8n5KV7sAbUqJfze5tvYYOWpoL6YOO4S7BeSCQB_v2SRpvGS_KMS6UJdyi_8MLJgzbTTMdT4p_se-yLhubpLr_vzAsK_rCMIzss5xc33TTDxNUB8NOUyo4BlK5NV0OajZTslNf_Zq7efEvGnjxXcWhBfL0xXm1Mfd6QecUyFK4yYOBskFXE9GJd_UyzlAutwVYyQMC4D0ff6381K0Z2-" alt="Reforma de Baño" />
             </div>
             <div class="p-8 text-center text-white">
-              <h3 class="text-xl font-bold uppercase tracking-widest mb-4">Reforma de Bano</h3>
-              <p class="text-gray-400 text-sm leading-relaxed">Reforma Integral de su bano con las maximas calidades y una ejecucion profesional.</p>
+              <h3 class="text-xl font-bold uppercase tracking-widest mb-4">Reforma de Baño</h3>
+              <p class="text-gray-400 text-sm leading-relaxed">Reforma Integral de su baño con las máximas calidades y una ejecución profesional.</p>
             </div>
           </article>
         </div>
