@@ -1,3 +1,27 @@
+// ================== APP DOWNLOAD BANNER LOGIC ==================
+document.addEventListener('DOMContentLoaded', function () {
+  var banner = document.getElementById('app-download-banner');
+  var closeBtn = document.getElementById('close-app-banner');
+  if (!banner || !closeBtn) return;
+
+  // Simple device detection (mobile/tablet)
+  function isMobileOrTablet() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 900);
+  }
+
+  // Only show if not previously closed in this session
+  if (isMobileOrTablet() && !sessionStorage.getItem('appBannerClosed')) {
+    banner.style.display = 'flex';
+    // Push body down so it doesn't hide header
+    document.body.style.paddingTop = banner.offsetHeight + 'px';
+  }
+
+  closeBtn.addEventListener('click', function () {
+    banner.style.display = 'none';
+    sessionStorage.setItem('appBannerClosed', '1');
+    document.body.style.paddingTop = null;
+  });
+});
 const filterButtons = document.querySelectorAll('.filter-btn');
 const proyectos = document.querySelectorAll('.proyecto-card');
 

@@ -1,12 +1,18 @@
+
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
-const route = useRoute();
+
+
+// const route = useRoute(); // Eliminada duplicada
 const isAdminAuthenticated = ref(false);
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+const route = useRoute();
+
 const logoClickCount = ref(0);
 let logoClickTimer = null;
+
 
 const links = [
   { to: '/', label: 'Inicio' },
@@ -117,3 +123,4 @@ onBeforeUnmount(() => {
     </nav>
   </header>
 </template>
+
