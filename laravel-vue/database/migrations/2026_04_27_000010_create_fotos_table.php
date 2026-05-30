@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('fotos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('album_id')->constrained('albums')->cascadeOnDelete();
+            $table->foreignId('album_id')->constrained('albums')->restrictOnDelete();
             $table->string('url', 255);
             $table->text('descripcion')->nullable();
             $table->integer('orden')->default(0);

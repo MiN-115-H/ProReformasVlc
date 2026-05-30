@@ -207,9 +207,34 @@ const request = async (url, options = {}) => {
   return response.json();
 };
 
+
+let errorTimeout = null;
 const withFeedback = async (fn) => {
   errorMessage.value = '';
-  try { await fn(); } catch (e) { errorMessage.value = e.message; }
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+    errorTimeout = null;
+  }
+  try {
+    await fn();
+  } catch (e) {
+    // Detectar error de restricción de borrado (puede venir del backend o del mensaje de error)
+    if (
+      typeof e.message === 'string' &&
+      (
+        e.message.toLowerCase().includes('foreign key constraint failed') || // SQLite
+        e.message.toLowerCase().includes('foreign key constraint') ||
+        e.message.toLowerCase().includes('restric') ||
+        e.message.toLowerCase().includes('activo') ||
+        e.message.toLowerCase().includes('referenciado')
+      )
+    ) {
+      errorMessage.value = 'No puedes eliminar un elemento activo.';
+      errorTimeout = setTimeout(() => { errorMessage.value = ''; }, 3000);
+    } else {
+      errorMessage.value = e.message;
+    }
+  }
 };
 
 const loadPanelData = async () => {

@@ -17,7 +17,7 @@ return new class extends Migration
                 ->nullable()
                 ->after('estado')
                 ->constrained('tipos_presupuesto')
-                ->nullOnDelete()
+                ->restrictOnDelete()
                 ->comment('Tipo de presupuesto seleccionado');
         });
     }

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('articulos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('servicio_id')->constrained('servicios')->cascadeOnDelete();
+            $table->foreignId('servicio_id')->constrained('servicios')->restrictOnDelete();
             $table->string('nombre', 100);
             $table->text('descripcion')->nullable();
             $table->decimal('precio', 10, 2);

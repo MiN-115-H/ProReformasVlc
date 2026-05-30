@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('descripcion', 150);
             $table->decimal('precio_base', 10, 2);
-            $table->foreignId('unidad_id')->constrained('unidades')->cascadeOnDelete();
-            $table->foreignId('tipo_presupuesto_id')->constrained('tipos_presupuesto')->cascadeOnDelete();
+            $table->foreignId('unidad_id')->constrained('unidades')->restrictOnDelete();
+            $table->foreignId('tipo_presupuesto_id')->constrained('tipos_presupuesto')->restrictOnDelete();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });

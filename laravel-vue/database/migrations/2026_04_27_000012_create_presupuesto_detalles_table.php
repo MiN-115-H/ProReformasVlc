@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('presupuesto_detalles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('presupuesto_id')->constrained('presupuestos')->cascadeOnDelete();
-            $table->foreignId('articulo_id')->constrained('articulos');
+            $table->foreignId('presupuesto_id')->constrained('presupuestos')->restrictOnDelete();
+            $table->foreignId('articulo_id')->constrained('articulos')->restrictOnDelete();
             $table->integer('cantidad');
             $table->decimal('precio_unitario', 10, 2);
             $table->timestamps();
