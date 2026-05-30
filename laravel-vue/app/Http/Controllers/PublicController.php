@@ -21,7 +21,7 @@ class PublicController extends Controller
                 'fotos' => $album->fotos->map(function($foto) {
                     return [
                         'id' => $foto->id,
-                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : Storage::disk('public')->url($foto->url),
+                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
                         'descripcion' => $foto->descripcion,
                     ];
                 })
