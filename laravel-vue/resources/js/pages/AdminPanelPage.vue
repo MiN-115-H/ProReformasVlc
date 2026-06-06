@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { getCsrfToken } from '../utils/csrf';
 
 const menu = [
   { id: 'tipos', label: 'Tipos de presupuesto' },
@@ -15,7 +16,6 @@ const menu = [
 const activeSection = ref('tipos');
 const loading = ref(false);
 const errorMessage = ref('');
-const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 const logoUrl = '/img/logo.jpg';
 const servicioImageSize = Object.freeze({ width: 1200, height: 800 });
 
@@ -177,9 +177,16 @@ const formatDate = (value) => {
 };
 
 const request = async (url, options = {}) => {
+  const method = String(options.method || 'GET').toUpperCase();
+  const requiresCsrf = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+
+  const csrfHeader = requiresCsrf
+    ? { 'X-CSRF-TOKEN': await getCsrfToken() }
+    : {};
+
   const headers = {
     Accept: 'application/json',
-    'X-CSRF-TOKEN': csrfToken,
+    ...csrfHeader,
     ...(options.headers ?? {}),
   };
 

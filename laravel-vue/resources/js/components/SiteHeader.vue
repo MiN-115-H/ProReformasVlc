@@ -2,12 +2,12 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
+import { getCsrfToken } from '../utils/csrf';
 
 
 
 // const route = useRoute(); // Eliminada duplicada
 const isAdminAuthenticated = ref(false);
-const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 const route = useRoute();
 
 const logoClickCount = ref(0);
@@ -41,6 +41,8 @@ const refreshSessionState = async () => {
 
 const logout = async () => {
   try {
+    const csrfToken = await getCsrfToken();
+
     await fetch('/auth/logout', {
       method: 'POST',
       headers: {

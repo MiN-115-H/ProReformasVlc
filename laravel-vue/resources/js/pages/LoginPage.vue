@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { getCsrfToken } from '../utils/csrf';
 
 const router = useRouter();
 const route = useRoute();
@@ -13,13 +14,13 @@ const form = reactive({
 const loading = ref(false);
 const error = ref('');
 
-const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-
 const submit = async () => {
   loading.value = true;
   error.value = '';
 
   try {
+    const csrfToken = await getCsrfToken();
+
     const response = await fetch('/auth/login', {
       method: 'POST',
       headers: {

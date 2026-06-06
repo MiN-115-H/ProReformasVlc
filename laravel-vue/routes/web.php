@@ -3,6 +3,10 @@
 use App\Http\Controllers\AdminAuthController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/csrf-token', function () {
+	return response()->json(['token' => csrf_token()]);
+});
+
 Route::view('/login', 'app')->name('login');
 
 Route::prefix('auth')->group(function () {
