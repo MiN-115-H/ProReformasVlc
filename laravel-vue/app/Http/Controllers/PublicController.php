@@ -46,6 +46,8 @@ class PublicController extends Controller
 
             return response()->json([
                 'message' => 'No se pudieron cargar los albums.',
+                'error' => $e->getMessage(),
+                'exception' => class_basename($e),
             ], 500, [], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         }
     }
