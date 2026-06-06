@@ -5,19 +5,19 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://YOUR-RENDER-BACKEND.onrender.com/api/:path*"
+      "destination": "https://proreformas-laravel.onrender.com/api/:path*"
     },
     {
       "source": "/auth/:path*",
-      "destination": "https://YOUR-RENDER-BACKEND.onrender.com/auth/:path*"
+      "destination": "https://proreformas-laravel.onrender.com/auth/:path*"
     },
     {
       "source": "/csrf-token",
-      "destination": "https://YOUR-RENDER-BACKEND.onrender.com/csrf-token"
+      "destination": "https://proreformas-laravel.onrender.com/csrf-token"
     },
     {
       "source": "/storage/:path*",
-      "destination": "https://YOUR-RENDER-BACKEND.onrender.com/storage/:path*"
+      "destination": "https://proreformas-laravel.onrender.com/storage/:path*"
     },
     {
       "source": "/img/:path*",
