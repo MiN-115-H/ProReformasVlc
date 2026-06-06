@@ -41,8 +41,6 @@ RUN addgroup -g 1000 www && adduser -D -u 1000 -G www www \
  && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
  && chown -R www:www storage bootstrap/cache
 
-RUN php artisan config:cache && php artisan view:cache
-
 USER www
 EXPOSE 10000
-CMD ["sh", "-lc", "php artisan storage:link || true; php artisan migrate --force; if [ \"${RUN_SEEDERS:-false}\" = \"true\" ]; then php artisan db:seed --force; fi; php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-lc", "php artisan config:clear; php artisan config:cache; php artisan view:cache; php artisan storage:link || true; php artisan migrate --force; if [ \"${RUN_SEEDERS:-false}\" = \"true\" ]; then php artisan db:seed --force; fi; php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
