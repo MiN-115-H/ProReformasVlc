@@ -371,7 +371,7 @@ class AdminPanelController extends Controller
     public function deleteAlbum(Album $album): JsonResponse
     {
         foreach($album->fotos as $foto) {
-            if (!str_starts_with($foto->url, 'http')) {
+            if (filled($foto->url) && !str_starts_with((string) $foto->url, 'http')) {
                 Storage::disk('public')->delete($foto->url);
             }
             $foto->delete();
@@ -405,7 +405,7 @@ class AdminPanelController extends Controller
 
     public function deleteFoto(Foto $foto): JsonResponse
     {
-        if (!str_starts_with($foto->url, 'http')) {
+        if (filled($foto->url) && !str_starts_with((string) $foto->url, 'http')) {
             Storage::disk('public')->delete($foto->url);
         }
         $foto->delete();
@@ -536,7 +536,9 @@ class AdminPanelController extends Controller
             'nombre' => $servicio->nombre,
             'descripcion' => $servicio->descripcion,
             'imagen_portada' => $servicio->imagen_portada,
-            'imagen_url' => $servicio->imagen_portada ? Storage::disk('public')->url($servicio->imagen_portada) : null,
+            'imagen_url' => filled($servicio->imagen_portada)
+                ? url('/storage/' . ltrim((string) $servicio->imagen_portada, '/'))
+                : null,
             'activo' => (bool) $servicio->activo,
             'fecha_creacion' => optional($servicio->fecha_creacion)->toIso8601String(),
             'created_at' => optional($servicio->created_at)->toIso8601String(),
