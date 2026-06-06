@@ -89,14 +89,19 @@ class AdminPanelController extends Controller
                 'nombre' => $album->nombre,
                 'descripcion' => $album->descripcion,
                 'categoria' => $album->categoria,
-                'fotos' => $album->fotos->map(function($foto) {
-                    return [
-                        'id' => $foto->id,
-                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
-                        'descripcion' => $foto->descripcion,
-                        'orden' => $foto->orden,
-                    ];
-                })
+                'fotos' => $album->fotos
+                    ->filter(fn ($foto) => filled($foto->url))
+                    ->map(function ($foto) {
+                        return [
+                            'id' => $foto->id,
+                            'url' => str_starts_with((string) $foto->url, 'http')
+                                ? $foto->url
+                                : url('/storage/' . ltrim((string) $foto->url, '/')),
+                            'descripcion' => $foto->descripcion,
+                            'orden' => $foto->orden,
+                        ];
+                    })
+                    ->values(),
             ];
         })->values();
         $usuarios = User::select('id', 'name', 'email', 'rol', 'activo')->orderBy('name')->get();
@@ -347,14 +352,19 @@ class AdminPanelController extends Controller
             'nombre' => $album->nombre,
             'descripcion' => $album->descripcion,
             'categoria' => $album->categoria,
-            'fotos' => $album->fotos->map(function($foto) {
-                return [
-                    'id' => $foto->id,
-                    'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
-                    'descripcion' => $foto->descripcion,
-                    'orden' => $foto->orden,
-                ];
-            })
+            'fotos' => $album->fotos
+                ->filter(fn ($foto) => filled($foto->url))
+                ->map(function ($foto) {
+                    return [
+                        'id' => $foto->id,
+                        'url' => str_starts_with((string) $foto->url, 'http')
+                            ? $foto->url
+                            : url('/storage/' . ltrim((string) $foto->url, '/')),
+                        'descripcion' => $foto->descripcion,
+                        'orden' => $foto->orden,
+                    ];
+                })
+                ->values(),
         ]);
     }
 
@@ -387,7 +397,7 @@ class AdminPanelController extends Controller
 
         return response()->json([
             'id' => $foto->id,
-            'url' => '/storage/' . $path,
+            'url' => url('/storage/' . $path),
             'descripcion' => $foto->descripcion,
             'orden' => $foto->orden,
         ], 201);
