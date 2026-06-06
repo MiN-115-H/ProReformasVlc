@@ -12,7 +12,7 @@ COPY public ./public
 COPY vite.config.js vite.frontend.config.js ./
 RUN npm run build
 
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 WORKDIR /app
 
 RUN apk add --no-cache \
