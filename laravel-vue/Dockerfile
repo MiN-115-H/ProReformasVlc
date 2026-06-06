@@ -45,4 +45,4 @@ RUN php artisan config:cache && php artisan view:cache
 
 USER www
 EXPOSE 10000
-CMD ["sh", "-lc", "php artisan storage:link || true; php artisan migrate --force; php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-lc", "php artisan storage:link || true; php artisan migrate --force; if [ \"${RUN_SEEDERS:-false}\" = \"true\" ]; then php artisan db:seed --force; fi; php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
