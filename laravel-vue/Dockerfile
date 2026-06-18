@@ -39,8 +39,20 @@ COPY --from=frontend_builder /app/public/build ./public/build
 
 RUN addgroup -g 1000 www && adduser -D -u 1000 -G www www \
  && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
- && chown -R www:www storage bootstrap/cache
+ && chown -R www:www storage bootstrap/cache public
 
 USER www
 EXPOSE 10000
-CMD ["sh", "-lc", "php artisan config:clear; php artisan config:cache; php artisan view:cache; php artisan storage:link || true; php artisan migrate --force; if [ \"${RUN_SEEDERS:-false}\" = \"true\" ]; then php artisan db:seed --force; fi; php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-lc", "\
+    UPLOADS=${PERSISTENT_STORAGE_PATH:-/var/data/storage}/app/public && \
+    mkdir -p ${UPLOADS}/albums ${UPLOADS}/servicios && \
+    if [ -d public/storage ] && [ ! -L public/storage ]; then rm -rf public/storage; fi && \
+    if [ -L public/storage ]; then rm public/storage; fi && \
+    ln -s ${UPLOADS} public/storage && \
+    echo [boot] public/storage -> $(readlink public/storage) && \
+    php artisan config:clear && \
+    php artisan config:cache && \
+    php artisan view:cache && \
+    php artisan migrate --force && \
+    if [ \"${RUN_SEEDERS:-false}\" = \"true\" ]; then php artisan db:seed --force; fi && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
