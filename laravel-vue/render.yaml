@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: proreformas-laravel
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        sync: false
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: FILESYSTEM_DISK
+        value: public
+      - key: PERSISTENT_STORAGE_PATH
+        value: /var/data/storage
+      - key: RUN_MIGRATIONS
+        value: "false"
+    disks:
+      - name: uploads
+        mountPath: /var/data/storage
+        sizeGB: 5

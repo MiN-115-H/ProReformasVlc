@@ -1,132 +1,392 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Panel de Control Estático - ProReformasVLC</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial;background:#f1f5f9;display:flex}
-aside{width:260px;background:#1b4332;color:white;height:100vh;padding:20px}
-aside h2{margin-bottom:20px}
-aside button{width:100%;padding:12px;margin:6px 0;border:none;background:#2d6a4f;color:white;border-radius:8px;cursor:pointer;text-align:left}
-aside button:hover{background:#40916c}
-main{flex:1;padding:25px}
-.card{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05)}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
-button{cursor:pointer}
-.btn{padding:6px 10px;border:none;border-radius:6px}
-.btn-add{background:#1b4332;color:white;margin-top:10px}
-.btn-del{background:#e63946;color:white}
-input,select,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:6px}
-.hidden{display:none}
-.label{font-size:12px;color:#555;margin-top:8px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Reformas Valencia | Panel de Control</title>
+  <meta name="description" content="Versión estática del panel de control de Pro Reformas Valencia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#6B7E66', secondary: '#2D3436' }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .admin-shell {
+      background: linear-gradient(165deg, #f5f7fb 0%, #dce8f4 100%);
+      min-height: calc(100vh - 90px);
+      padding: 2rem 1rem;
+    }
+
+    .admin-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.25rem;
+    }
+
+    .admin-sidebar,
+    .admin-content {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(24, 54, 88, 0.12);
+      padding: 1.5rem;
+    }
+
+    .admin-sidebar h2 {
+      margin: 0 0 1rem;
+      color: #1d3557;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .menu-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      text-align: left;
+      margin-bottom: 0.5rem;
+      color: #1d3557;
+      background: #edf2f8;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .menu-btn.active,
+    .menu-btn:hover {
+      background: #2a9d8f;
+      color: #fff;
+    }
+
+    .panel-head h1 {
+      margin: 0;
+      color: #1d3557;
+      font-size: 1.7rem;
+      font-weight: 900;
+    }
+
+    .panel-head p {
+      margin-top: 0.35rem;
+      color: #5c728a;
+    }
+
+    .panel-block {
+      margin-top: 1.25rem;
+      display: none;
+    }
+
+    .panel-block.active {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .section-header h3 {
+      margin: 0;
+      color: #1d3557;
+      font-weight: 800;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-gray { background: #e5e7eb; color: #374151; }
+
+    .item-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border: 1px solid #dbe4ee;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .item-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #e7edf5;
+      background: #fff;
+      flex-wrap: wrap;
+    }
+
+    .item-list li:last-child {
+      border-bottom: 0;
+    }
+
+    .muted {
+      color: #5c728a;
+      font-size: 0.92rem;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-neutral,
+    .btn-danger {
+      border: 0;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: default;
+    }
+
+    .btn-primary { background: #1d3557; color: #fff; }
+    .btn-neutral { background: #e2e8f0; color: #1e293b; }
+    .btn-danger { background: #ef4444; color: #fff; }
+
+    .status-note {
+      margin-top: 1rem;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1024px) {
+      .admin-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-sidebar {
+        position: sticky;
+        top: 88px;
+        z-index: 10;
+      }
+    }
+  </style>
 </head>
-<body>
+<body class="bg-white">
 
-<aside>
-<h2>🏗️ Admin</h2>
-<button onclick="show('confPresupuesto')">Tipos Presupuesto</button>
-<button onclick="show('unidades')">Unidades</button>
-<button onclick="show('conceptos')">Conceptos</button>
-<button onclick="show('presupuestos')">Presupuestos</button>
-<button onclick="show('servicios')">Servicios</button>
-<button onclick="show('albumes')">Álbumes</button>
-<button onclick="show('usuarios')">Usuarios</button>
-</aside>
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+  <nav class="max-w-7xl mx-auto px-4 md:px-12 py-4 flex justify-between items-center">
+    <a href="index.html" class="flex items-center">
+      <img src="img/logo.jpg" alt="Pro Reformas Valencia" class="h-12 md:h-14 w-auto object-contain" />
+    </a>
+    <ul class="hidden lg:flex items-center space-x-8 font-semibold text-sm uppercase tracking-wider">
+      <li><a href="index.html" class="hover:text-primary transition-colors">Inicio</a></li>
+      <li><a href="empresa.html" class="hover:text-primary transition-colors">Empresa</a></li>
+      <li><a href="servicios.html" class="hover:text-primary transition-colors">Servicios</a></li>
+      <li><a href="proyectos.html" class="hover:text-primary transition-colors">Proyectos</a></li>
+      <li><a href="presupuestos.html" class="hover:text-primary transition-colors">Presupuestos</a></li>
+      <li><a href="contacto.html" class="hover:text-primary transition-colors">Contacto</a></li>
+      <li><a href="panel-estatico.html" class="active transition-colors">Panel</a></li>
+    </ul>
+    <button id="menu-btn" class="lg:hidden p-2 rounded-md text-gray-700 hover:text-primary" aria-label="Abrir menú">
+      <span class="material-icons">menu</span>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="lg:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-3 font-semibold text-sm uppercase tracking-wider">
+    <a href="index.html" class="block hover:text-primary">Inicio</a>
+    <a href="empresa.html" class="block hover:text-primary">Empresa</a>
+    <a href="servicios.html" class="block hover:text-primary">Servicios</a>
+    <a href="proyectos.html" class="block hover:text-primary">Proyectos</a>
+    <a href="presupuestos.html" class="block hover:text-primary">Presupuestos</a>
+    <a href="contacto.html" class="block hover:text-primary">Contacto</a>
+    <a href="panel-estatico.html" class="block text-primary">Panel</a>
+  </div>
+</header>
 
-<main>
+<main class="admin-shell">
+  <div class="admin-wrap">
+    <aside class="admin-sidebar">
+      <h2>Panel de control</h2>
+      <button type="button" class="menu-btn active" data-section="tipos">Tipos de presupuesto</button>
+      <button type="button" class="menu-btn" data-section="unidades">Unidades de medida</button>
+      <button type="button" class="menu-btn" data-section="conceptos">Conceptos</button>
+      <button type="button" class="menu-btn" data-section="presupuestos">Presupuestos</button>
+      <button type="button" class="menu-btn" data-section="contactos">Contactos</button>
+      <button type="button" class="menu-btn" data-section="servicios">Servicios</button>
+      <button type="button" class="menu-btn" data-section="albumes">Proyectos</button>
+      <button type="button" class="menu-btn" data-section="usuarios">Usuarios</button>
+      <p class="status-note">Demo estática inspirada en el panel de laravel-vue. No realiza operaciones en base de datos.</p>
+    </aside>
 
-<div id="confPresupuesto" class="card">
-<h3>Tipos de Presupuesto</h3>
-<table>
-<thead><tr><th>Nombre</th><th>Descripción</th></tr></thead>
-<tbody>
-<tr><td>Cocina</td><td>Reformas de cocina completas</td></tr>
-<tr><td>Baño</td><td>Reformas y rediseño de baños</td></tr>
-<tr><td>Integral</td><td>Reformas integrales de vivienda</td></tr>
-</tbody>
-</table>
-</div>
+    <section class="admin-content">
+      <header class="panel-head">
+        <h1 id="section-title">Tipos de presupuesto</h1>
+        <p>Gestión de datos internos de ProReformasVLC</p>
+      </header>
 
-<div id="unidades" class="card hidden">
-<h3>Unidades</h3>
-<table>
-<thead><tr><th>Nombre</th><th>Abrev</th></tr></thead>
-<tbody>
-<tr><td>Metro cuadrado</td><td>m2</td></tr>
-<tr><td>Unidad</td><td>ud</td></tr>
-<tr><td>Hora</td><td>h</td></tr>
-</tbody>
-</table>
-</div>
+      <div id="tipos" class="panel-block active">
+        <div class="section-header">
+          <h3>Tipos de presupuesto</h3>
+          <button type="button" class="btn-primary">+ Agregar tipo</button>
+        </div>
+        <ul class="item-list">
+          <li><span><strong>Cocina</strong> - Reformas de cocina completas</span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+          <li><span><strong>Baño</strong> - Reformas y rediseno de baños</span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+          <li><span><strong>Integral</strong> - Reformas integrales de vivienda</span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+        </ul>
+      </div>
 
-<div id="conceptos" class="card hidden">
-<h3>Conceptos</h3>
-<table>
-<thead><tr><th>Descripción</th><th>Precio</th><th>Unidad</th><th>Tipo</th></tr></thead>
-<tbody>
-<tr><td>Alicatado cocina</td><td>44.00</td><td>m2</td><td>Cocina</td></tr>
-<tr><td>Cambio de bañera por ducha</td><td>890.00</td><td>ud</td><td>Baño</td></tr>
-<tr><td>Mano de obra oficial</td><td>35.00</td><td>h</td><td>Integral</td></tr>
-</tbody>
-</table>
-</div>
+      <div id="unidades" class="panel-block">
+        <div class="section-header">
+          <h3>Unidades de medida</h3>
+          <button type="button" class="btn-primary">+ Agregar unidad</button>
+        </div>
+        <ul class="item-list">
+          <li><span><strong>Metro cuadrado</strong> (m2)</span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+          <li><span><strong>Unidad</strong> (ud)</span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+          <li><span><strong>Hora</strong> (h)</span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+        </ul>
+      </div>
 
-<div id="presupuestos" class="card hidden">
-<h3>Presupuestos</h3>
-<table>
-<thead><tr><th>Cliente</th><th>Ciudad</th><th>Tipo</th></tr></thead>
-<tbody>
-<tr><td>Juan Pérez</td><td>Valencia</td><td>Cocina</td></tr>
-<tr><td>María López</td><td>Valencia</td><td>Baño</td></tr>
-</tbody>
-</table>
-</div>
+      <div id="conceptos" class="panel-block">
+        <div class="section-header">
+          <h3>Conceptos</h3>
+          <button type="button" class="btn-primary">+ Agregar concepto</button>
+        </div>
+        <ul class="item-list">
+          <li>
+            <span><strong>Alicatado cocina</strong> - 44.00 EUR / m2 <span class="muted">(Cocina)</span><span class="badge badge-green">Activo</span></span>
+            <div class="action-group"><button class="btn-primary">Editar</button><button class="btn-neutral">Desactivar</button><button class="btn-danger">Eliminar</button></div>
+          </li>
+          <li>
+            <span><strong>Cambio de banera por ducha</strong> - 890.00 EUR / ud <span class="muted">(Baño)</span><span class="badge badge-green">Activo</span></span>
+            <div class="action-group"><button class="btn-primary">Editar</button><button class="btn-neutral">Desactivar</button><button class="btn-danger">Eliminar</button></div>
+          </li>
+        </ul>
+      </div>
 
-<div id="servicios" class="card hidden">
-<h3>Servicios</h3>
-<table>
-<thead><tr><th>Nombre</th><th>Descripción</th></tr></thead>
-<tbody>
-<tr><td>Albañilería</td><td>Tabiques, alicatados, pavimentos y molduras</td></tr>
-<tr><td>Carpintería</td><td>Puertas, armarios, tarimas y muebles a medida</td></tr>
-<tr><td>Fontanería</td><td>Instalaciones multicapa y bajantes comunitarias</td></tr>
-<tr><td>Electricidad</td><td>Cuadros, iluminación y acometidas</td></tr>
-<tr><td>Pintura</td><td>Alisados, estucos y acabados decorativos</td></tr>
-<tr><td>Aire acondicionado</td><td>Instalación de maquinaria y conductos</td></tr>
-</tbody>
-</table>
-</div>
+      <div id="presupuestos" class="panel-block">
+        <div class="section-header">
+          <h3>Solicitudes recibidas</h3>
+        </div>
+        <ul class="item-list">
+          <li>
+            <span><strong>#18 - Reforma de Cocina de 21 m2</strong><br><span class="muted">Ana Ruiz - 612345678 - ana@email.com</span><br><strong>13,480.00 EUR</strong> <span class="badge badge-gray">pendiente</span></span>
+            <div class="action-group"><button class="btn-neutral">Ver albaran</button><button class="btn-primary">Aceptar</button><button class="btn-danger">Denegar</button></div>
+          </li>
+          <li>
+            <span><strong>#17 - Reforma integral ático</strong><br><span class="muted">Carlos Mena - 699887766 - carlos@email.com</span><br><strong>27,990.00 EUR</strong> <span class="badge badge-green">aceptado</span></span>
+            <div class="action-group"><button class="btn-neutral">Ver albaran</button><button class="btn-neutral">Pendiente</button></div>
+          </li>
+        </ul>
+      </div>
 
-<div id="albumes" class="card hidden">
-<h3>Álbumes</h3>
-<table>
-<thead><tr><th>Nombre</th></tr></thead>
-<tbody>
-<tr><td>Reforma Cocina 2026</td></tr>
-<tr><td>Baño Moderno</td></tr>
-</tbody>
-</table>
-</div>
+      <div id="contactos" class="panel-block">
+        <div class="section-header">
+          <h3>Formularios recibidos</h3>
+        </div>
+        <ul class="item-list">
+          <li>
+            <span><strong>#42 - Laura Perez</strong><br><span class="muted">laura@email.com - +34 654112233</span><br><span class="muted">Asunto: Reforma baño en Ruzafa</span> <span class="badge badge-red">nuevo</span></span>
+            <div class="action-group"><button class="btn-neutral">Marcar leido</button><button class="btn-primary">Responder</button><button class="btn-danger">Eliminar</button></div>
+          </li>
+          <li>
+            <span><strong>#39 - Juan Perez</strong><br><span class="muted">juan@email.com - +34 600000000</span><br><span class="muted">Asunto: Presupuesto cocina</span> <span class="badge badge-green">respondido</span></span>
+            <div class="action-group"><button class="btn-neutral">Marcar no respondido</button><button class="btn-danger">Eliminar</button></div>
+          </li>
+        </ul>
+      </div>
 
-<div id="usuarios" class="card hidden">
-<h3>Usuarios</h3>
-<table>
-<thead><tr><th>Nombre</th><th>Email</th></tr></thead>
-<tbody>
-<tr><td>Admin ProReformas</td><td>admin@proreformasvlc.com</td></tr>
-<tr><td>Editor Demo</td><td>editor@proreformasvlc.com</td></tr>
-</tbody>
-</table>
-</div>
+      <div id="servicios" class="panel-block">
+        <div class="section-header">
+          <h3>Servicios</h3>
+          <button type="button" class="btn-primary">+ Agregar servicio</button>
+        </div>
+        <ul class="item-list">
+          <li><span><strong>Albanileria</strong><br><span class="muted">Tabiques, alicatados, pavimentos y molduras</span></span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+          <li><span><strong>Electricidad</strong><br><span class="muted">Cuadros, iluminacion y acometidas</span></span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+        </ul>
+      </div>
 
+      <div id="albumes" class="panel-block">
+        <div class="section-header">
+          <h3>Proyectos realizados</h3>
+          <button type="button" class="btn-primary">+ Agregar proyecto</button>
+        </div>
+        <ul class="item-list">
+          <li><span><strong>Cocina abierta Campanar</strong> <span class="badge badge-gray">Cocinas</span><br><span class="muted">Redistribucion completa con isla y luz perimetral.</span></span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+          <li><span><strong>Bano suite Benimaclet</strong> <span class="badge badge-gray">Baños</span><br><span class="muted">Ducha de obra y revestimiento porcelanico.</span></span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-danger">Eliminar</button></div></li>
+        </ul>
+      </div>
+
+      <div id="usuarios" class="panel-block">
+        <div class="section-header">
+          <h3>Usuarios</h3>
+          <button type="button" class="btn-primary">+ Agregar usuario</button>
+        </div>
+        <ul class="item-list">
+          <li><span><strong>Admin ProReformas</strong> - admin@proreformasvlc.com <span class="badge badge-green">admin</span> <span class="badge badge-green">activo</span></span><div class="action-group"><span class="muted">Cuenta principal</span></div></li>
+          <li><span><strong>Editor Demo</strong> - editor@proreformasvlc.com <span class="badge badge-gray">editor</span> <span class="badge badge-gray">inactivo</span></span><div class="action-group"><button class="btn-primary">Editar</button><button class="btn-neutral">Activar</button><button class="btn-danger">Eliminar</button></div></li>
+        </ul>
+      </div>
+    </section>
+  </div>
 </main>
 
 <script>
-function show(id){document.querySelectorAll('.card').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
-</script>
+  document.getElementById('menu-btn').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  });
 
+  const sections = {
+    tipos: 'Tipos de presupuesto',
+    unidades: 'Unidades de medida',
+    conceptos: 'Conceptos',
+    presupuestos: 'Presupuestos',
+    contactos: 'Contactos',
+    servicios: 'Servicios',
+    albumes: 'Proyectos realizados',
+    usuarios: 'Usuarios'
+  };
+
+  const buttons = document.querySelectorAll('.menu-btn');
+  const blocks = document.querySelectorAll('.panel-block');
+  const title = document.getElementById('section-title');
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const sectionId = button.dataset.section;
+
+      buttons.forEach((item) => item.classList.remove('active'));
+      button.classList.add('active');
+
+      blocks.forEach((block) => block.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+
+      title.textContent = sections[sectionId] || 'Panel de control';
+    });
+  });
+</script>
 </body>
 </html>

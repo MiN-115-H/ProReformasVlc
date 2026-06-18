@@ -56,3 +56,32 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Deploy On Render (Docker)
+
+This repository includes Docker deployment files for Render:
+
+- [Dockerfile](Dockerfile)
+- [render.yaml](render.yaml)
+- [docker/start.sh](docker/start.sh)
+
+### Important for uploaded images
+
+This app stores uploaded images in `storage/app/public`. In Render, containers are ephemeral, so you must use a persistent disk.
+
+1. Mount a Persistent Disk in Render at `/var/data/storage`.
+2. Keep `PERSISTENT_STORAGE_PATH=/var/data/storage`.
+3. Ensure `FILESYSTEM_DISK=public` and `APP_URL` points to your public Render URL.
+
+`docker/start.sh` automatically runs `php artisan storage:link` on boot so `/storage/...` URLs work.
+
+### Deploy steps
+
+1. Push your changes.
+2. Trigger a deploy in Render.
+3. Check logs for successful boot.
+4. Verify image URL in browser:
+
+`https://your-domain.onrender.com/storage/albums/your-image.jpg`
+
+If the image URL returns 200, album photos should display in the web gallery.
