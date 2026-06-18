@@ -56,7 +56,7 @@ CMD ["sh", "-lc", "\
     if [ -d public/storage ] && [ ! -L public/storage ]; then rm -rf public/storage; fi && \
     if [ -L public/storage ]; then rm public/storage; fi && \
     ln -s ${UPLOADS} public/storage && \
-    echo [boot] public/storage -> $(readlink public/storage) && \
+    echo "[boot] public/storage => $(readlink public/storage)" && \
     php artisan config:clear && \
     php artisan config:cache && \
     php artisan view:cache && \
