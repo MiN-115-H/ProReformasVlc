@@ -44,8 +44,15 @@ RUN addgroup -g 1000 www && adduser -D -u 1000 -G www www \
 USER www
 EXPOSE 10000
 CMD ["sh", "-lc", "\
-    UPLOADS=${PERSISTENT_STORAGE_PATH:-/var/data/storage}/app/public && \
-    mkdir -p ${UPLOADS}/albums ${UPLOADS}/servicios && \
+        PERSIST_ROOT=${PERSISTENT_STORAGE_PATH:-/var/data/storage} && \
+        if [ -d \"${PERSIST_ROOT}\" ] && [ -w \"${PERSIST_ROOT}\" ]; then \
+            UPLOADS=${PERSIST_ROOT}/app/public; \
+            echo [boot] using persistent storage at ${UPLOADS}; \
+        else \
+            UPLOADS=/app/storage/app/public; \
+            echo [boot] persistent storage not writable, falling back to ${UPLOADS}; \
+        fi && \
+        mkdir -p ${UPLOADS}/albums ${UPLOADS}/servicios && \
     if [ -d public/storage ] && [ ! -L public/storage ]; then rm -rf public/storage; fi && \
     if [ -L public/storage ]; then rm public/storage; fi && \
     ln -s ${UPLOADS} public/storage && \
