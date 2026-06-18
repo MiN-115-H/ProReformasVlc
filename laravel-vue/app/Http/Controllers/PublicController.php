@@ -21,7 +21,7 @@ class PublicController extends Controller
                 'fotos' => $album->fotos->map(function($foto) {
                     return [
                         'id' => $foto->id,
-                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
+                        'url' => $this->toPublicFotoUrl($foto->url),
                         'descripcion' => $foto->descripcion,
                     ];
                 })
@@ -29,5 +29,26 @@ class PublicController extends Controller
         })->values();
 
         return response()->json($albumes);
+    }
+
+    private function toPublicFotoUrl(string $url): string
+    {
+        // Absolute URL (http/https): extract just the path to avoid mixed-content issues
+        if (str_starts_with($url, 'http')) {
+            $path = parse_url($url, PHP_URL_PATH) ?? '';
+            $normalized = ltrim($path, '/');
+            if (str_starts_with($normalized, 'storage/')) {
+                return '/' . $normalized;
+            }
+            return '/storage/' . $normalized;
+        }
+
+        $normalized = ltrim($url, '/');
+
+        if (str_starts_with($normalized, 'storage/')) {
+            return '/' . $normalized;
+        }
+
+        return '/storage/' . $normalized;
     }
 }

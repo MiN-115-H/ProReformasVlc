@@ -24,16 +24,20 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
+    libpq-dev \
     libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip gd \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring zip gd \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Replace default Apache port 80 with Render port 10000 and set document root
+RUN sed -ri -e 's!^Listen 80!Listen 10000!' /etc/apache2/ports.conf \
+    && sed -ri -e 's!<VirtualHost \*:80>!<VirtualHost *:10000>!' /etc/apache2/sites-available/*.conf
+
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /var/www/html
 

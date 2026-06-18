@@ -92,7 +92,7 @@ class AdminPanelController extends Controller
                 'fotos' => $album->fotos->map(function($foto) {
                     return [
                         'id' => $foto->id,
-                        'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
+                        'url' => $this->toPublicFotoUrl($foto->url),
                         'descripcion' => $foto->descripcion,
                         'orden' => $foto->orden,
                     ];
@@ -350,7 +350,7 @@ class AdminPanelController extends Controller
             'fotos' => $album->fotos->map(function($foto) {
                 return [
                     'id' => $foto->id,
-                    'url' => str_starts_with($foto->url, 'http') ? $foto->url : ('/storage/' . $foto->url),
+                    'url' => $this->toPublicFotoUrl($foto->url),
                     'descripcion' => $foto->descripcion,
                     'orden' => $foto->orden,
                 ];
@@ -362,7 +362,7 @@ class AdminPanelController extends Controller
     {
         foreach($album->fotos as $foto) {
             if (!str_starts_with($foto->url, 'http')) {
-                Storage::disk('public')->delete($foto->url);
+                Storage::disk('public')->delete($this->toStoragePath($foto->url));
             }
             $foto->delete();
         }
@@ -387,7 +387,7 @@ class AdminPanelController extends Controller
 
         return response()->json([
             'id' => $foto->id,
-            'url' => '/storage/' . $path,
+            'url' => $this->toPublicFotoUrl($path),
             'descripcion' => $foto->descripcion,
             'orden' => $foto->orden,
         ], 201);
@@ -396,7 +396,7 @@ class AdminPanelController extends Controller
     public function deleteFoto(Foto $foto): JsonResponse
     {
         if (!str_starts_with($foto->url, 'http')) {
-            Storage::disk('public')->delete($foto->url);
+            Storage::disk('public')->delete($this->toStoragePath($foto->url));
         }
         $foto->delete();
         return response()->json(['message' => 'Foto eliminada.']);
@@ -531,5 +531,37 @@ class AdminPanelController extends Controller
             'fecha_creacion' => optional($servicio->fecha_creacion)->toIso8601String(),
             'created_at' => optional($servicio->created_at)->toIso8601String(),
         ];
+    }
+
+    private function toPublicFotoUrl(string $url): string
+    {
+        // Absolute URL (http/https): extract just the path to avoid mixed-content issues
+        if (str_starts_with($url, 'http')) {
+            $path = parse_url($url, PHP_URL_PATH) ?? '';
+            $normalized = ltrim($path, '/');
+            if (str_starts_with($normalized, 'storage/')) {
+                return '/' . $normalized;
+            }
+            return '/storage/' . $normalized;
+        }
+
+        $normalized = ltrim($url, '/');
+
+        if (str_starts_with($normalized, 'storage/')) {
+            return '/' . $normalized;
+        }
+
+        return '/storage/' . $normalized;
+    }
+
+    private function toStoragePath(string $url): string
+    {
+        $normalized = ltrim($url, '/');
+
+        if (str_starts_with($normalized, 'storage/')) {
+            return substr($normalized, strlen('storage/'));
+        }
+
+        return $normalized;
     }
 }
