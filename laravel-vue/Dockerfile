@@ -39,27 +39,9 @@ COPY --from=frontend_builder /app/public/build ./public/build
 
 RUN addgroup -g 1000 www && adduser -D -u 1000 -G www www \
  && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
- && chown -R www:www storage bootstrap/cache public
+ && chown -R www:www storage bootstrap/cache public \
+ && chmod +x /app/start-render.sh
 
 USER www
 EXPOSE 10000
-CMD ["sh", "-lc", "\
-        PERSIST_ROOT=${PERSISTENT_STORAGE_PATH:-/var/data/storage} && \
-        if [ -d \"${PERSIST_ROOT}\" ] && [ -w \"${PERSIST_ROOT}\" ]; then \
-            UPLOADS=${PERSIST_ROOT}/app/public; \
-            echo [boot] using persistent storage at ${UPLOADS}; \
-        else \
-            UPLOADS=/app/storage/app/public; \
-            echo [boot] persistent storage not writable, falling back to ${UPLOADS}; \
-        fi && \
-        mkdir -p ${UPLOADS}/albums ${UPLOADS}/servicios && \
-    if [ -d public/storage ] && [ ! -L public/storage ]; then rm -rf public/storage; fi && \
-    if [ -L public/storage ]; then rm public/storage; fi && \
-    ln -s ${UPLOADS} public/storage && \
-    echo "[boot] public/storage => $(readlink public/storage)" && \
-    php artisan config:clear && \
-    php artisan config:cache && \
-    php artisan view:cache && \
-    php artisan migrate --force && \
-    if [ \"${RUN_SEEDERS:-false}\" = \"true\" ]; then php artisan db:seed --force; fi && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["/app/start-render.sh"]
